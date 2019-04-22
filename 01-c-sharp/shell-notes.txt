@@ -1,0 +1,11 @@
+shell basics:
+    prompt: currently logged-in user, and computer name.
+    in yellow: current directory.
+    you are always in one directory at a time, given by the yellow indicator.
+    ~ is a special name for your home/user directory. (e.g. /c/Users/Revature)
+    we can use relative paths and absolute paths
+    special meaning of "..": the parent of the current directory.
+shell (bash) commands:
+    cd: change directory to whatever dir you give as argument.
+    ls: list contents of current directory.
+    mkdir:
