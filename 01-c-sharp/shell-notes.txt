@@ -8,4 +8,10 @@ shell basics:
 shell (bash) commands:
     cd: change directory to whatever dir you give as argument.
     ls: list contents of current directory.
-    mkdir:
+    mkdir: create a new folder
+
+git commands:
+    git clone <.git url>
+        creates a new local repository from GitHub.
+    git pull
+        to pull all new updates from GitHub since the last time you pulled.
