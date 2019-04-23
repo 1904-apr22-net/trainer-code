@@ -22,11 +22,14 @@ namespace Shapes.Library
 
         // when a field is used to start a property's value like this
         // we call it a "backing field"
-        private double _radius;
+        protected double _radius;
+        //private double _radius;
         // underscore is one common convention for private fields.
 
         // property that does the same thing as Circle's getters and setters.
-        public double Radius
+        public virtual double Radius
+            // "virtual": subclasses are allowed to override this property/method
+            // and change how it works for their instances.
         {
             get
             {
@@ -46,10 +49,10 @@ namespace Shapes.Library
         }
 
         // we call "=>" "arrow" or maybe "goes to"
-        public double GetPerimeter() => 2 * Math.PI * Radius;
+        public virtual double GetPerimeter() => 2 * Math.PI * Radius;
 
         //public double Area => Math.PI * Radius * Radius;
-        public double Area => Math.PI * Math.Pow(Radius, 2);
+        public virtual double Area => Math.PI * Math.Pow(Radius, 2);
         // circle area is "pi r squared"
     }
 }

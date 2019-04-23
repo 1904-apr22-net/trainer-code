@@ -39,19 +39,24 @@ namespace Shapes.UI
         {
             Rectangle r = new Rectangle();
 
-            r.Length = 4;
+            Console.WriteLine("Enter the length: ");
+
+            r.Length = int.Parse(Console.ReadLine());
             r.Width = 3;
 
             Console.WriteLine(r.GetPerimeter());
             Console.WriteLine(r.Area);
 
-            BetterCircle circle = new BetterCircle();
+            //BetterCircle circle = new BetterCircle();
+            BetterCircle circle = new NoisyCircle();
             circle.Radius = 8;
 
             Console.WriteLine();
 
             PrintShapeDetails(r, "rectangle");
             PrintShapeDetails(circle, "circle");
+
+            ColoredCircle blueCircle = new ColoredCircle();
         }
 
         static void PrintShapeDetails(IShape shape, string name)
