@@ -9,7 +9,7 @@ namespace CollectionTesting.Library
     // to be put in a foreach loop.
     public class GenericCollection<T> : IEnumerable<T>
     {
-        protected List<T> List { get; } = new List<T>();
+        protected List<T> List { get; set; } = new List<T>();
 
         public GenericCollection()
         {
