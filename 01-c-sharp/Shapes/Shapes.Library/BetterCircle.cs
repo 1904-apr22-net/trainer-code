@@ -49,7 +49,7 @@ namespace Shapes.Library
         }
 
         // we call "=>" "arrow" or maybe "goes to"
-        public virtual double GetPerimeter() => 2 * Math.PI * Radius;
+        public double GetPerimeter() => 2 * Math.PI * Radius;
 
         //public double Area => Math.PI * Radius * Radius;
         public virtual double Area => Math.PI * Math.Pow(Radius, 2);

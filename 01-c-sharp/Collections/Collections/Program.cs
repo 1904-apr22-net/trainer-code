@@ -197,5 +197,46 @@ namespace Collections
             // it gets its initial values from the list.
             var count = newSet.Count; // 4.
         }
+
+        static void OutDemo()
+        {
+            // we use out often for sort of conditional operations
+            var str = "1234";
+
+            //var num = int.Parse(str);
+
+            if (int.TryParse(str, out var num))
+            {
+                // in here, we have "num" as int, if there is an int
+            }
+            else
+            {
+                // in here, there is no num, and str did not have an int
+            }
+
+            var dict = new Dictionary<string, string>();
+
+            if (dict.TryGetValue("food", out var value))
+            {
+                // in here, we have "value" if there was anything for key "food"
+            }
+            else
+            {
+                // in here, there was nothing at "food" in that dictionary
+            }
+
+            var a = "abc";
+            var b = "cba";
+            var c = 1234;
+            Swap(ref a, ref b);
+        }
+
+        // uses "ref" to swap two variables' values.
+        static void Swap<T>(ref T one, ref T two)
+        {
+            T swap = one;
+            one = two;
+            two = swap;
+        }
     }
 }

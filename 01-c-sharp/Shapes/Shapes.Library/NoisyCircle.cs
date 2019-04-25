@@ -40,7 +40,7 @@ namespace Shapes.Library
             }
         }
 
-        public override double GetPerimeter()
+        public new double GetPerimeter()
         {
             Console.WriteLine("getting perimeter.");
             // we can always access the parent class's implementation with
