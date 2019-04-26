@@ -1,4 +1,5 @@
-﻿using RestaurantReviews.DataAccess.Repositories;
+﻿using NLog;
+using RestaurantReviews.DataAccess.Repositories;
 using RestaurantReviews.Library.Interfaces;
 using RestaurantReviews.Library.Models;
 using System;
@@ -12,11 +13,12 @@ namespace RestaurantReviews.ConsoleUI
 {
     public static class Program
     {
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+
         public static void Main()
         {
             IRestaurantRepository restaurantRepository = CreateRestaurantRepository();
             XmlSerializer serializer = CreateXmlSerializer();
-            //ILogger logger = 
 
             Console.WriteLine("Restaurant Reviews");
 
@@ -141,6 +143,7 @@ namespace RestaurantReviews.ConsoleUI
                                                     }
                                                     catch (ArgumentException ex)
                                                     {
+                                                        _logger.Info(ex);
                                                         Console.WriteLine(ex.Message);
                                                     }
                                                 }
@@ -158,14 +161,17 @@ namespace RestaurantReviews.ConsoleUI
                                                     }
                                                     catch (FormatException ex)
                                                     {
+                                                        _logger.Info(ex);
                                                         Console.WriteLine(ex.Message);
                                                     }
                                                     catch (OverflowException ex)
                                                     {
+                                                        _logger.Info(ex);
                                                         Console.WriteLine(ex.Message);
                                                     }
                                                     catch (ArgumentException ex)
                                                     {
+                                                        _logger.Info(ex);
                                                         Console.WriteLine(ex.Message);
                                                     }
                                                 }
@@ -183,6 +189,7 @@ namespace RestaurantReviews.ConsoleUI
                                                     }
                                                     catch (ArgumentException ex)
                                                     {
+                                                        _logger.Info(ex);
                                                         Console.WriteLine(ex.Message);
                                                     }
                                                 }
@@ -201,6 +208,7 @@ namespace RestaurantReviews.ConsoleUI
                                             {
                                                 Console.WriteLine();
                                                 Console.WriteLine($"Invalid input \"{input}\".");
+                                                _logger.Warn($"Invalid input \"{input}\".");
                                             }
                                         }
                                         else if (input == "b")
@@ -211,6 +219,7 @@ namespace RestaurantReviews.ConsoleUI
                                         {
                                             Console.WriteLine();
                                             Console.WriteLine($"Invalid input \"{input}\".");
+                                            _logger.Warn($"Invalid input \"{input}\".");
                                         }
                                     }
                                 }
@@ -228,6 +237,7 @@ namespace RestaurantReviews.ConsoleUI
                                         }
                                         catch (ArgumentException ex)
                                         {
+                                            _logger.Info(ex);
                                             Console.WriteLine(ex.Message);
                                         }
                                     }
@@ -242,14 +252,17 @@ namespace RestaurantReviews.ConsoleUI
                                         }
                                         catch (FormatException ex)
                                         {
+                                            _logger.Info(ex);
                                             Console.WriteLine(ex.Message);
                                         }
                                         catch (OverflowException ex)
                                         {
+                                            _logger.Info(ex);
                                             Console.WriteLine(ex.Message);
                                         }
                                         catch (ArgumentException ex)
                                         {
+                                            _logger.Info(ex);
                                             Console.WriteLine(ex.Message);
                                         }
                                     }
@@ -264,6 +277,7 @@ namespace RestaurantReviews.ConsoleUI
                                         }
                                         catch (ArgumentException ex)
                                         {
+                                            _logger.Info(ex);
                                             Console.WriteLine(ex.Message);
                                         }
                                     }
@@ -289,6 +303,7 @@ namespace RestaurantReviews.ConsoleUI
                                         }
                                         catch (ArgumentException ex)
                                         {
+                                            _logger.Info(ex);
                                             Console.WriteLine(ex.Message);
                                         }
                                     }
@@ -310,6 +325,7 @@ namespace RestaurantReviews.ConsoleUI
                                 {
                                     Console.WriteLine();
                                     Console.WriteLine($"Invalid input \"{input}\".");
+                                    _logger.Warn($"Invalid input \"{input}\".");
                                 }
                             }
                         }
@@ -321,6 +337,7 @@ namespace RestaurantReviews.ConsoleUI
                         {
                             Console.WriteLine();
                             Console.WriteLine($"Invalid input \"{input}\".");
+                            _logger.Warn($"Invalid input \"{input}\".");
                         }
                     }
                 }
@@ -338,6 +355,7 @@ namespace RestaurantReviews.ConsoleUI
                         }
                         catch (ArgumentException ex)
                         {
+                            _logger.Info(ex);
                             Console.WriteLine(ex.Message);
                         }
                     }
@@ -358,10 +376,12 @@ namespace RestaurantReviews.ConsoleUI
                     catch (SecurityException ex)
                     {
                         Console.WriteLine($"Error while saving: {ex.Message}");
+                        _logger.Error(ex, "Error while saving.");
                     }
                     catch (IOException ex)
                     {
                         Console.WriteLine($"Error while saving: {ex.Message}");
+                        _logger.Error(ex, "Error while saving.");
                     }
                 }
                 else if (input == "l")
@@ -387,24 +407,29 @@ namespace RestaurantReviews.ConsoleUI
                     catch (FileNotFoundException)
                     {
                         Console.WriteLine("No saved data found.");
+                        _logger.Info("No saved data found.");
                     }
                     catch (SecurityException ex)
                     {
                         Console.WriteLine($"Error while loading: {ex.Message}");
+                        _logger.Error(ex, "Error while loading.");
                     }
                     catch (IOException ex)
                     {
                         Console.WriteLine($"Error while loading: {ex.Message}");
+                        _logger.Error(ex, "Error while loading.");
                     }
                 }
                 else if (input == "q")
                 {
+                    _logger.Info("Exiting application.");
                     break;
                 }
                 else
                 {
                     Console.WriteLine();
                     Console.WriteLine($"Invalid input \"{input}\".");
+                    _logger.Warn($"Invalid input \"{input}\".");
                 }
             }
         }
