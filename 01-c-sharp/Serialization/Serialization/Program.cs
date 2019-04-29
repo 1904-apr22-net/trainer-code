@@ -7,9 +7,9 @@ using System.Xml.Serialization;
 
 namespace Serialization
 {
-    class Program
+    public class Program
     {
-        async static Task Main(string[] args)
+        public async static Task Main(string[] args)
         {
             // initialize some data
             //
