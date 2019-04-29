@@ -11,6 +11,7 @@ namespace Serialization
     {
         async static Task Main(string[] args)
         {
+            // initialize some data
             var persons = new List<Person>
             {
                 new Person
