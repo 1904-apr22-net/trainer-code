@@ -1,4 +1,5 @@
 ﻿using RestaurantReviews.Library.Models;
+using System;
 using System.Collections.Generic;
 
 namespace RestaurantReviews.Library.Interfaces
@@ -6,7 +7,7 @@ namespace RestaurantReviews.Library.Interfaces
     /// <summary>
     /// A repository managing data access for restaurant objects and their review members.
     /// </summary>
-    public interface IRestaurantRepository
+    public interface IRestaurantRepository : IDisposable
     {
         /// <summary>
         /// Get all restaurants with deferred execution.
