@@ -194,14 +194,17 @@ namespace RestaurantReviews.ConsoleUI
                                                     }
                                                 }
                                                 restaurantRepository.UpdateReview(newReview);
+                                                restaurantRepository.Save();
                                                 reviews[reviewNum - 1] = newReview;
                                             }
                                             else if (input == "d")
                                             {
                                                 restaurantRepository.DeleteReview(reviews[reviewNum - 1].Id);
+                                                restaurantRepository.Save();
                                             }
                                             else if (input == "b")
                                             {
+                                                Console.WriteLine();
                                                 break;
                                             }
                                             else
@@ -282,6 +285,7 @@ namespace RestaurantReviews.ConsoleUI
                                         }
                                     }
                                     restaurantRepository.AddReview(newReview, restaurants[restaurantNum - 1]);
+                                    restaurantRepository.Save();
                                 }
                                 else if (input == "e")
                                 {
@@ -310,15 +314,18 @@ namespace RestaurantReviews.ConsoleUI
                                     restaurant = newRestaurant;
                                     restaurants[restaurantNum - 1] = restaurant;
                                     restaurantRepository.UpdateRestaurant(restaurant);
+                                    restaurantRepository.Save();
                                 }
                                 else if (input == "d")
                                 {
                                     restaurantRepository.DeleteRestaurant(restaurants[restaurantNum - 1].Id);
+                                    restaurantRepository.Save();
                                     restaurants.RemoveAt(restaurantNum - 1);
                                     break;
                                 }
                                 else if (input == "b")
                                 {
+                                    Console.WriteLine();
                                     break;
                                 }
                                 else
@@ -360,6 +367,7 @@ namespace RestaurantReviews.ConsoleUI
                         }
                     }
                     restaurantRepository.AddRestaurant(restaurant);
+                    restaurantRepository.Save();
                 }
                 else if (input == "s")
                 {
@@ -403,6 +411,7 @@ namespace RestaurantReviews.ConsoleUI
                         {
                             restaurantRepository.AddRestaurant(item);
                         }
+                        restaurantRepository.Save();
                     }
                     catch (FileNotFoundException)
                     {
