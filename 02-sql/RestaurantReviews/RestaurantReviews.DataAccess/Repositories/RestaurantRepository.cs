@@ -1,6 +1,7 @@
-﻿using NLog;
+﻿using Microsoft.EntityFrameworkCore;
+using NLog;
+using RestaurantReviews.DataAccess.Entities;
 using RestaurantReviews.Library.Interfaces;
-using RestaurantReviews.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,62 +10,63 @@ namespace RestaurantReviews.DataAccess.Repositories
 {
     /// <summary>
     /// A repository managing data access for restaurant objects and their review members,
-    /// using an in-memory collection (no data persistence).
+    /// using Entity Framework.
     /// </summary>
+    /// <remarks>
+    /// This class ought to have better exception handling and logging.
+    /// </remarks>
     public class RestaurantRepository : IRestaurantRepository
     {
-        private readonly ICollection<Restaurant> _data;
+        private readonly RestaurantReviewsDbContext _dbContext;
 
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Initializes a new restaurant repository given a suitable restaurant data source.
         /// </summary>
-        /// <param name="data">The data source</param>
-        public RestaurantRepository(ICollection<Restaurant> data) =>
-            _data = data ?? throw new ArgumentNullException(nameof(data));
+        /// <param name="dbContext">The data source</param>
+        public RestaurantRepository(RestaurantReviewsDbContext dbContext) =>
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
         /// <summary>
         /// Get all restaurants with deferred execution.
         /// </summary>
         /// <returns>The collection of restaurants</returns>
-        public IEnumerable<Restaurant> GetRestaurants(string search = null)
+        public IEnumerable<Library.Models.Restaurant> GetRestaurants(string search = null)
         {
-            IEnumerable<Restaurant> items = _data;
+
+            IQueryable<Entities.Restaurant> items = _dbContext.Restaurant
+                .Include(r => r.Review).AsNoTracking();
             if (search != null)
             {
                 items = items.Where(r => r.Name.Contains(search));
             }
-            foreach (Restaurant item in items)
-            {
-                yield return item;
-            }
+            return Mapper.Map(items);
         }
 
         /// <summary>
         /// Get a restaurant by ID.
         /// </summary>
         /// <returns>The restaurant</returns>
-        public Restaurant GetRestaurantById(int id) => _data.First(r => r.Id == id);
+        public Library.Models.Restaurant GetRestaurantById(int id) =>
+            Mapper.Map(_dbContext.Restaurant.Find(id));
 
         /// <summary>
         /// Add a restaurant, including any associated reviews.
         /// </summary>
         /// <param name="restaurant">The restaurant</param>
-        public void AddRestaurant(Restaurant restaurant)
+        public void AddRestaurant(Library.Models.Restaurant restaurant)
         {
             if (restaurant.Id != 0)
             {
                 _logger.Warn($"Restaurant to be added has an ID ({restaurant.Id}) already: ignoring.");
             }
-            // calculate an appropriate ID: the first integer higher
-            // than the maximum existing ID.
-            var id = _data.Select(x => x.Id).DefaultIfEmpty().Max() + 1;
-            restaurant.Id = id;
 
-            _logger.Info($"Adding restaurant with ID {id}");
+            _logger.Info($"Adding restaurant");
 
-            _data.Add(restaurant);
+            Entities.Restaurant entity = Mapper.Map(restaurant);
+            entity.Id = 0;
+            _dbContext.Add(entity);
         }
 
         /// <summary>
@@ -74,18 +76,24 @@ namespace RestaurantReviews.DataAccess.Repositories
         public void DeleteRestaurant(int restaurantId)
         {
             _logger.Info($"Deleting restaurant with ID {restaurantId}");
-            _data.Remove(_data.First(r => r.Id == restaurantId));
+            Entities.Restaurant entity = _dbContext.Restaurant.Find(restaurantId);
+            _dbContext.Remove(entity);
         }
 
         /// <summary>
         /// Update a restaurant as well as its reviews.
         /// </summary>
         /// <param name="restaurant">The restaurant with changed values</param>
-        public void UpdateRestaurant(Restaurant restaurant)
+        public void UpdateRestaurant(Library.Models.Restaurant restaurant)
         {
             _logger.Info($"Updating restaurant with ID {restaurant.Id}");
-            DeleteRestaurant(restaurant.Id);
-            AddRestaurant(restaurant);
+
+            // calling Update would mark every property as Modified.
+            // this way will only mark the changed properties as Modified.
+            Entities.Restaurant currentEntity = _dbContext.Restaurant.Find(restaurant.Id);
+            Entities.Restaurant newEntity = Mapper.Map(restaurant);
+
+            _dbContext.Entry(currentEntity).CurrentValues.SetValues(newEntity);
         }
 
         /// <summary>
@@ -93,22 +101,31 @@ namespace RestaurantReviews.DataAccess.Repositories
         /// </summary>
         /// <param name="review">The review</param>
         /// <param name="restaurant">The restaurant</param>
-        public void AddReview(Review review, Restaurant restaurant)
+        public void AddReview(Library.Models.Review review, Library.Models.Restaurant restaurant = null)
         {
             if (restaurant.Id != 0)
             {
                 _logger.Warn($"Review to be added has an ID ({review.Id}) already: ignoring.");
             }
-            // calculate an appropriate ID: the first integer higher
-            // than the maximum existing ID.
-            // SelectMany does what Select does, and then
-            // flattens one level of nested sequences.
-            var id = _data.SelectMany(res => res.Reviews.Select(rev => rev.Id))
-                .DefaultIfEmpty().Max() + 1;
-            review.Id = id;
 
-            _logger.Info($"Adding review with ID {review.Id} to restaurant with ID {restaurant.Id}");
-            restaurant.Reviews.Add(review);
+            _logger.Info($"Adding review to restaurant with ID {restaurant.Id}");
+
+            if (restaurant != null)
+            {
+                // get the db's version of that restaurant
+                // (can't use Find with Include)
+                Entities.Restaurant restaurantEntity = _dbContext.Restaurant
+                    .Include(r => r.Review).First(r => r.Id == restaurant.Id);
+                Entities.Review newEntity = Mapper.Map(review);
+                restaurantEntity.Review.Add(newEntity);
+                // also, modify the parameters
+                restaurant.Reviews.Add(review);
+            }
+            else
+            {
+                Entities.Review newEntity = Mapper.Map(review);
+                _dbContext.Add(newEntity);
+            }
         }
 
         /// <summary>
@@ -118,20 +135,31 @@ namespace RestaurantReviews.DataAccess.Repositories
         public void DeleteReview(int reviewId)
         {
             _logger.Info($"Deleting review with ID {reviewId}");
-            Restaurant restaurant = _data.First(x => x.Reviews.Any(y => y.Id == reviewId));
-            restaurant.Reviews.Remove(restaurant.Reviews.First(y => y.Id == reviewId));
+
+            Entities.Review entity = _dbContext.Review.Find(reviewId);
+            _dbContext.Remove(entity);
         }
 
         /// <summary>
         /// Update a review.
         /// </summary>
         /// <param name="review">The review with changed values</param>
-        public void UpdateReview(Review review)
+        public void UpdateReview(Library.Models.Review review)
         {
             _logger.Info($"Updating review with ID {review.Id}");
-            Restaurant restaurant = _data.First(x => x.Reviews.Any(y => y.Id == review.Id));
-            var index = restaurant.Reviews.IndexOf(restaurant.Reviews.First(y => y.Id == review.Id));
-            restaurant.Reviews[index] = review;
+
+            Entities.Review currentEntity = _dbContext.Review.Find(review.Id);
+            Entities.Review newEntity = Mapper.Map(review);
+
+            _dbContext.Entry(currentEntity).CurrentValues.SetValues(newEntity);
+        }
+
+        /// <summary>
+        /// Persist changes to the data source.
+        /// </summary>
+        public void Save()
+        {
+            _dbContext.SaveChanges();
         }
     }
 }

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantReviews.DataAcces
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantReviews.ConsoleUI", "RestaurantReviews.ConsoleUI\RestaurantReviews.ConsoleUI.csproj", "{DBD47B7F-636A-446A-9B7E-17C605F3AF92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantReviews.Tests", "RestaurantReviews.Tests\RestaurantReviews.Tests.csproj", "{5ED7DB83-AD27-4438-9B88-53085FE1458F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantReviews.Tests", "RestaurantReviews.Tests\RestaurantReviews.Tests.csproj", "{5ED7DB83-AD27-4438-9B88-53085FE1458F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -39,11 +39,11 @@ namespace RestaurantReviews.Library.Interfaces
         void UpdateRestaurant(Restaurant restaurant);
 
         /// <summary>
-        /// Add a review and associate it with a restaurant.
+        /// Add a review and optionally associate it with a restaurant.
         /// </summary>
         /// <param name="review">The review</param>
-        /// <param name="restaurant">The restaurant</param>
-        void AddReview(Review review, Restaurant restaurant);
+        /// <param name="restaurant">The restaurant (or null if none)</param>
+        void AddReview(Review review, Restaurant restaurant = null);
 
         /// <summary>
         /// Delete a review by ID.
@@ -56,5 +56,10 @@ namespace RestaurantReviews.Library.Interfaces
         /// </summary>
         /// <param name="review">The review with changed values</param>
         void UpdateReview(Review review);
+
+        /// <summary>
+        /// Persist changes to the data source.
+        /// </summary>
+        void Save();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using NLog;
-using RestaurantReviews.DataAccess.Repositories;
 using RestaurantReviews.Library.Interfaces;
 using RestaurantReviews.Library.Models;
 using System;
@@ -17,8 +16,9 @@ namespace RestaurantReviews.ConsoleUI
 
         public static void Main()
         {
-            IRestaurantRepository restaurantRepository = CreateRestaurantRepository();
-            XmlSerializer serializer = CreateXmlSerializer();
+            IRestaurantRepository restaurantRepository = Dependencies.
+                CreateRestaurantRepository();
+            XmlSerializer serializer = Dependencies.CreateXmlSerializer();
 
             Console.WriteLine("Restaurant Reviews");
 
@@ -433,14 +433,5 @@ namespace RestaurantReviews.ConsoleUI
                 }
             }
         }
-
-        public static IRestaurantRepository CreateRestaurantRepository()
-        {
-            var dataSource = new List<Restaurant>();
-            return new RestaurantRepository(dataSource);
-        }
-
-        public static XmlSerializer CreateXmlSerializer() =>
-            new XmlSerializer(typeof(List<Restaurant>));
     }
 }
