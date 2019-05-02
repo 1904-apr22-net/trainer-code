@@ -202,6 +202,7 @@ namespace RestaurantReviews.ConsoleUI
                                             }
                                             else if (input == "b")
                                             {
+                                                Console.WriteLine();
                                                 break;
                                             }
                                             else
@@ -319,6 +320,7 @@ namespace RestaurantReviews.ConsoleUI
                                 }
                                 else if (input == "b")
                                 {
+                                    Console.WriteLine();
                                     break;
                                 }
                                 else
