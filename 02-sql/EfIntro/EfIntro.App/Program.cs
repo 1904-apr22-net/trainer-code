@@ -1,6 +1,7 @@
 ﻿using EfIntro.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 
 namespace EfIntro.App
 {
@@ -53,24 +54,78 @@ namespace EfIntro.App
 
         private static void DeleteAMovie(MovieDbContext dbContext)
         {
-            throw new NotImplementedException();
+            // the most recently modified movie, with LINQ
+            Movie movie = dbContext.Movie
+                .OrderByDescending(m => m.DateModified)
+                .First();
+
+            dbContext.Remove(movie);
+            // this will use the SQL-defined "on delete cascade" behavior if present.
+            // (if there are any foreign keys pointing at the thing we are removing.)
+
+            dbContext.SaveChanges();
         }
 
         private static void UpdateAMovie(MovieDbContext dbContext)
         {
-            throw new NotImplementedException();
+            // the most recently modified movie, with LINQ
+            Movie movie = dbContext.Movie
+                .OrderByDescending(m => m.DateModified)
+                .First();
+
+            // the objects you pull out of the DbSets are "tracked"
+            // by EF. meaning EF watches changes to all its properties
+            // for later application with SaveChanges.
+
+            // set active if inactive, and vice versa
+            movie.Active = !movie.Active;
+
+            dbContext.SaveChanges();
         }
 
         private static void AddAMovie(MovieDbContext dbContext)
         {
-            throw new NotImplementedException();
+            // because DbSet is IQueryable...
+            // this LINQ expression does not ever actually run as C#,
+            // it is translated to a SQL query. "LINQ To SQL"
+            // e.g. in SQL string compare is case-insensitive:
+            var actionGenre = dbContext.Genre.First(g => g.Name == "acTIOn");
+
+            var movie = new Movie
+            {
+                Title = "Star Wars VIII",
+                ReleaseDate = new DateTime(2018, 1, 1),
+                Genre = actionGenre
+            };
+
+            // i am ultimately setting up a foreign key relationship
+            // but i'm doing it by setting navigation properties
+
+            dbContext.Add(movie);
+
+            // this would also work... but i don't need to do both!
+            //actionGenre.Movie.Add(movie);
+
+            // nothing has yet been sent to the real DB...
+
+            try
+            {
+                dbContext.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                dbContext.Movie.Remove(movie);
+                Console.WriteLine(ex.Message);
+            }
+
+            // now the new movie is in the real DB.
         }
 
         private static void PrintMovies(MovieDbContext dbContext)
         {
-            foreach (Movie movie in dbContext.Movie)
+            foreach (Movie movie in dbContext.Movie.Include(m => m.Genre))
             {
-                Console.WriteLine($"{movie.MovieId}: {movie.Title} ({movie.ReleaseDate.Year})");
+                Console.WriteLine($"{movie.Genre.Name} {movie.MovieId}: {movie.Title} ({movie.ReleaseDate.Year})");
             }
             Console.WriteLine();
         }
