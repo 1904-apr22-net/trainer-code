@@ -34,8 +34,8 @@ namespace RestaurantReviews.DataAccess.Repositories
         /// <returns>The collection of restaurants</returns>
         public IEnumerable<Library.Models.Restaurant> GetRestaurants(string search = null)
         {
-
-            IQueryable<Entities.Restaurant> items = _dbContext.Restaurant
+            // disable unnecessary tracking for performance benefit
+            IQueryable<Restaurant> items = _dbContext.Restaurant
                 .Include(r => r.Review).AsNoTracking();
             if (search != null)
             {
@@ -64,7 +64,7 @@ namespace RestaurantReviews.DataAccess.Repositories
 
             _logger.Info($"Adding restaurant");
 
-            Entities.Restaurant entity = Mapper.Map(restaurant);
+            Restaurant entity = Mapper.Map(restaurant);
             entity.Id = 0;
             _dbContext.Add(entity);
         }
@@ -76,7 +76,7 @@ namespace RestaurantReviews.DataAccess.Repositories
         public void DeleteRestaurant(int restaurantId)
         {
             _logger.Info($"Deleting restaurant with ID {restaurantId}");
-            Entities.Restaurant entity = _dbContext.Restaurant.Find(restaurantId);
+            Restaurant entity = _dbContext.Restaurant.Find(restaurantId);
             _dbContext.Remove(entity);
         }
 
@@ -90,8 +90,8 @@ namespace RestaurantReviews.DataAccess.Repositories
 
             // calling Update would mark every property as Modified.
             // this way will only mark the changed properties as Modified.
-            Entities.Restaurant currentEntity = _dbContext.Restaurant.Find(restaurant.Id);
-            Entities.Restaurant newEntity = Mapper.Map(restaurant);
+            Restaurant currentEntity = _dbContext.Restaurant.Find(restaurant.Id);
+            Restaurant newEntity = Mapper.Map(restaurant);
 
             _dbContext.Entry(currentEntity).CurrentValues.SetValues(newEntity);
         }
@@ -114,16 +114,16 @@ namespace RestaurantReviews.DataAccess.Repositories
             {
                 // get the db's version of that restaurant
                 // (can't use Find with Include)
-                Entities.Restaurant restaurantEntity = _dbContext.Restaurant
+                Restaurant restaurantEntity = _dbContext.Restaurant
                     .Include(r => r.Review).First(r => r.Id == restaurant.Id);
-                Entities.Review newEntity = Mapper.Map(review);
+                Review newEntity = Mapper.Map(review);
                 restaurantEntity.Review.Add(newEntity);
                 // also, modify the parameters
                 restaurant.Reviews.Add(review);
             }
             else
             {
-                Entities.Review newEntity = Mapper.Map(review);
+                Review newEntity = Mapper.Map(review);
                 _dbContext.Add(newEntity);
             }
         }
@@ -136,7 +136,7 @@ namespace RestaurantReviews.DataAccess.Repositories
         {
             _logger.Info($"Deleting review with ID {reviewId}");
 
-            Entities.Review entity = _dbContext.Review.Find(reviewId);
+            Review entity = _dbContext.Review.Find(reviewId);
             _dbContext.Remove(entity);
         }
 
@@ -148,8 +148,8 @@ namespace RestaurantReviews.DataAccess.Repositories
         {
             _logger.Info($"Updating review with ID {review.Id}");
 
-            Entities.Review currentEntity = _dbContext.Review.Find(review.Id);
-            Entities.Review newEntity = Mapper.Map(review);
+            Review currentEntity = _dbContext.Review.Find(review.Id);
+            Review newEntity = Mapper.Map(review);
 
             _dbContext.Entry(currentEntity).CurrentValues.SetValues(newEntity);
         }

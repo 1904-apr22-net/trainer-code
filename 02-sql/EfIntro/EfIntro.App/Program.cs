@@ -1,5 +1,7 @@
 ﻿using EfIntro.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Linq;
 
@@ -7,6 +9,12 @@ namespace EfIntro.App
 {
     class Program
     {
+        public static readonly LoggerFactory AppLoggerFactory = new LoggerFactory(new[]
+        {
+            new ConsoleLoggerProvider((_, level)
+                => level >= LogLevel.Information, true)
+        });
+
         static void Main(string[] args)
         {
             // steps for EF DB-first approach:
@@ -80,6 +88,8 @@ namespace EfIntro.App
             // set active if inactive, and vice versa
             movie.Active = !movie.Active;
 
+
+
             dbContext.SaveChanges();
         }
 
@@ -133,7 +143,9 @@ namespace EfIntro.App
         private static MovieDbContext CreateDbContext()
         {
             var optionsBuilder = new DbContextOptionsBuilder<MovieDbContext>();
-            optionsBuilder.UseSqlServer(SecretConfiguration.ConnectionString);
+            optionsBuilder
+                .UseSqlServer(SecretConfiguration.ConnectionString)
+                .UseLoggerFactory(AppLoggerFactory);
 
             return new MovieDbContext(optionsBuilder.Options);
         }
