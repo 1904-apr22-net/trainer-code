@@ -1,0 +1,182 @@
+<!-- comments in html like so -->
+<!-- first part of an HTML document is not an element: -->
+<!-- the document type declaration -->
+<!-- this doctype is necessary to have the browser interpret this
+document as HTML 5. -->
+<!DOCTYPE html>
+
+<!-- html: root element -->
+<html lang="en">
+    <!-- the head element, for general page metadata -->
+    <head>
+        <!-- most metadata uses "meta" element with different attributes -->
+        <!-- declaring the character encoding of this file to be UTF-8 (Unicode) -->
+        <meta charset="UTF-8">
+        <!-- setting initial viewport on mobile devices -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <!-- the name of the tab / window / bookmark -->
+        <title>Document</title>
+        <!-- some things that we used to put in the head tag -->
+        <!-- application-name: name of the web app -->
+        <!-- author -->
+        <!-- description - used to be used heavily by search engines -->
+        <!-- keywords also -->
+        <!-- robots - for programs that crawl the web -->
+
+        <!-- also in the head tag we link to CSS stylesheet files -->
+        <!-- and to JavaScript script files -->
+    </head>
+    <!-- the body element, for the page content. -->
+    <body>
+        Hello
+        <!-- html does not care about whitespace -->
+        world!
+
+        <!-- paragraph element -->
+        <p>paragraph 1</p><p>paragraph 2</p>
+
+        <!-- section headers 1-6 -->
+        <h1>Biggest header</h1>
+        <h6>smallest header</h6>
+
+        <!-- the image element -->
+        <!-- uses "src" attribute to point to
+        where the image is located. -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/.NET_Core_Logo.svg/240px-.NET_Core_Logo.svg.png" width="50px" />
+        <!-- self-closing tag -->
+
+        <!-- not only remotely-hosted images, but also images from a relative path,
+        from the same file system as the HTML.-->
+        <img src="240px-.NET_Core_Logo.svg.png" width="50px" alt="put this text if the image can't be seen">
+
+        <!-- for links, we have the anchor element -->
+        <a href="https://google.com" target="_blank">Google</a>
+        <!-- target="_blank" for opening in a new tab. -->
+
+        <!-- lists -->
+        <!-- ordered list -->
+        <ol>
+            <!-- list item -->
+            <li>Seattle</li>
+            <li>Washington, D.C.</li>
+            <li>Dallas</li>
+        </ol>
+        <!-- nested lists are allowed -->
+
+        <!-- unordered list -->
+        <ul>
+            <li>Nick</li>
+            <li>Fred</li>
+        </ul>
+
+        <!-- there's also definition list (dl) -->
+
+        <!-- some "formatting" tags -->
+        <p>
+            we have <strong>strong</strong> text. (bold by default).
+            <b>(deprecated way to have bold text)</b>
+            we have <em>emphasis</em> text (italic by default).
+            <i>(deprecated italic text)</i>
+            we have <u>underlined</u> text.
+        </p>
+
+        <blockquote>
+            for paragraphs that are quotations
+        </blockquote>
+
+        <!-- when there's not a pre-existing -->
+        <!-- element to describe what we want -->
+        <div id="the-first-div">
+            <!-- div is the generic block element -->
+            asdfasdf
+        </div>
+        <div class="asdf">
+            asdfasdf
+        </div>
+
+        <span>
+            <!-- span is the generic inline  -->
+            asdf
+        </span>
+        <span>asdf</span>
+
+        <!-- line break -->
+        <!-- (not good practice to use for vertical spacing) -->
+        <br>
+
+        <!-- global attributes e.g. -->
+        <!-- id, class -->
+
+        <!-- tables in HTML -->
+        <table>
+            <!-- header section -->
+            <thead>
+                <!-- table row -->
+                <tr>
+                    <!-- table header cell -->
+                    <th>City</th>
+                    <th>State</th>
+                </tr>
+            </thead>
+            <!-- body section -->
+            <tbody>
+                <tr>
+                    <!-- table data cell -->
+                    <td>Dallas</td>
+                    <td>Texas</td>
+                </tr>
+                <tr >
+                    <td>Seattle</td>
+                    <td>Washington</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- there are ways to escape characters
+        in HTML -->
+        <p>
+            <!-- doesn't work -->
+            <!-- "<p>" -->
+
+            <!-- less than, greater than -->
+            <!-- character references -->
+            &lt;p&gt;
+            &copy;
+            <!-- "named" character references -->
+        </p>
+
+        <!-- we also have numeric character
+        references -->
+        <!-- decimal Unicode codepoint -->
+        &#4624;
+        <!-- hexadecimal Unicode codepoint -->
+        &#xb3fa;
+
+        <!-- BUT... i said up above this is a UTF-8 document... -->
+        ሐ 돺
+        <!-- we don't need to use character
+        references, except it's good for whitespace characters -->
+
+        <!-- new elements added by hTML 5 -->
+
+        <!-- the main section of the page -->
+        <main></main>
+        <!-- one of several articles -->
+        <article></article>
+        <!-- one of several sections -->
+        <section></section>
+        <header></header>
+        <footer></footer>
+        <!-- sidebar -->
+        <aside></aside>
+        <!-- a panel or section that have navigation links to other pages -->
+        <nav></nav>
+
+        <div class="navigation-bar"></div>
+
+        <audio></audio>
+        <video></video>
+        <canvas></canvas>
+    </body>
+</html>
