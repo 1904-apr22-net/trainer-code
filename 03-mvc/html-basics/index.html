@@ -178,5 +178,72 @@ document as HTML 5. -->
         <audio></audio>
         <video></video>
         <canvas></canvas>
+
+        <!-- forms -->
+        <!-- forms submit form data to some URL. -->
+        <!-- they have various "inputs" -->
+        <!-- and some way to "submit". -->
+        <div>
+            <form action="https://google.com/search" method="GET" target="_blank">
+                <input type="text" name="q">
+                <input type="submit">
+            </form>
+        </div>
+        <br>
+        <br>
+        <div>
+            <form action="#" method="POST">
+                <!-- name is for the name of the data sent to the server. -->
+                <!-- id is the name of this element within the HTML page. -->
+                <label for="firstname">First name:</label>
+                <input type="text" name="firstname" id="firstname">
+
+                <label>
+                    Last name:
+                    <input type="text" name="lastname"
+                     required maxlength="30">
+                     <!-- minlength, pattern -->
+                     <!-- required="required" means, empty string not allowed. -->
+                </label>
+
+                <input type="number" name="age" placeholder="Age">
+
+                <input type="checkbox">
+                <input type="password">
+
+                <label>
+                    Seattle
+                    <input type="radio" name="city" value="seattle">
+                </label>
+                <label>
+                    DC
+                    <input type="radio" name="city" value="dc">
+                </label>
+                <label>
+                    Dallas
+                    <input type="radio" name="city" value="dallas">
+                </label>
+                <!-- this will result in sending form data -->
+                <!-- city=dallas -->
+
+                <!-- select element is for dropdown lists -->
+                <select name="city2">
+                    <option value="seattle">Seattle</option>
+                    <option value="dc">DC</option>
+                </select>
+
+                <input type="hidden" name="asdf" value="value">
+                <!-- hidden fields are just sent back
+                to the server with the rest -->
+
+                <!-- form control for multiline text input -->
+                <textarea></textarea>
+
+                <input type="datetime-local">
+                <input type="color">
+                <input type="file">
+                <input type="submit">
+            </form>
+        </div>
     </body>
 </html>
