@@ -1,0 +1,35 @@
+﻿@* in ASP.NET MVC, we have weakly-typed and strongly-typed views. *@
+@* strongly-typed views can accept as their one parameter, an object of a particular type. *@
+
+@model HelloMVC.Models.Timestamp
+
+@* a view has access to the actual object it was passed under the name "Model" *@
+
+@*
+    this is a Razor comment.
+    CSHTML views in MVC are rendered into HTML by the Razor view engine
+    and they use Razor syntax
+*@
+
+@* this here is a "Razor block".. this code runs while we render the page *@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@* regular HTML here... nothing dynamic or templated *@
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <h3>@Model.Value</h3>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+@*
+    each view by default has a layout which is under Shared/_Layout.cshtml.
+    that file provides the overall structure of the document, the <html>, the <head>
+    any header or footer for the page...
+
+    and somewhere in that file, it says "@RenderBody()"
+    which is a Razor expression meaning, insert the content of the specific view
+    here.
+*@
