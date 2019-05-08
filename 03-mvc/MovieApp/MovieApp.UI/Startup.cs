@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MovieApp.BL;
+using MovieApp.DA;
 
 namespace MovieApp.UI
 {
@@ -30,6 +32,36 @@ namespace MovieApp.UI
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            // it is in Startup.ConfigureServices that we
+            // register dependencies to be injected as constructor parameters
+            // whenever the framework makes a class that requires those parameters.
+
+            // this means: "anytime someone requests an IMovieRepository,
+            // create a MovieRepository and give it to him."
+            services.AddScoped<IMovieRepository, MovieRepository>();
+            // the "scoped" part means... reuse the same MovieRepository instance
+            // during a given HTTP request... but make a new one
+            // for the next HTTP request
+            // (i.e. we can configure service lifetime)
+
+            // "anytime someone asks for a List<Movie>, give him this instance."
+
+            // (singleton lifetime means, it's always the same object forever)
+            var actionGenre = new Genre { Id = 1, Name = "Action" };
+            services.AddSingleton(new List<Movie>
+            {
+                new Movie
+                {
+                    Id = 1,
+                    Title = "Die Hard",
+                    ReleaseDate = new DateTime(1988, 1, 1),
+                    Genre = actionGenre
+                }
+            });
+
+            // Transient lifetime means, every time the service is 
+            // requested, a new instance is always constructed.
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
