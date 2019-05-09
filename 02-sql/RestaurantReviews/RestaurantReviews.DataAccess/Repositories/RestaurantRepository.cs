@@ -159,6 +159,7 @@ namespace RestaurantReviews.DataAccess.Repositories
         /// </summary>
         public void Save()
         {
+            _logger.Info("Saving changes to the database");
             _dbContext.SaveChanges();
         }
 
