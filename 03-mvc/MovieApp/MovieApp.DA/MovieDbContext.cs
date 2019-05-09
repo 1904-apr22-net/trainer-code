@@ -78,6 +78,26 @@ namespace MovieApp.DA
                 entity.Property(g => g.Name)
                     .HasMaxLength(200);
             });
+
+            // seeding data
+            // (applied via migrations, even though it is not "schema")
+
+            // we have to use an anonymous object here in order
+            // to provide a value for the shadow property GenreId.
+            // (you can't use the navigation properties when seeding data in this way,
+            // this is a bit more "low-level")
+            modelBuilder.Entity<Movie>().HasData(new
+            {
+                Id = 1,
+                Title = "Star Wars IV",
+                ReleaseDate = new DateTime(1970, 1, 1),
+                GenreId = 1 // action genre
+            });
+
+            modelBuilder.Entity<Genre>().HasData(
+                new Genre { Id = 1, Name = "Action" },
+                new Genre { Id = 2, Name = "Drama" }
+            );
         }
     }
 }

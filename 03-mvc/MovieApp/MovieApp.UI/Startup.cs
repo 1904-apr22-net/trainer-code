@@ -38,16 +38,29 @@ namespace MovieApp.UI
             // register dependencies to be injected as constructor parameters
             // whenever the framework makes a class that requires those parameters.
 
-            services.AddDbContext<MovieDbContext>(options =>
-            {
-                options.UseSqlServer(Configuration.GetConnectionString("MovieCodeFirstDb"));
-            });
-            // that registers a DbContext with scoped lifetime.
-            // (one instance per HTTP request.)
-
             // this means: "anytime someone requests an IMovieRepository,
             // create a MovieRepository and give it to him."
-            services.AddScoped<IMovieRepository, MovieRepository>();
+
+            var connString = Configuration.GetConnectionString("MovieCodeFirstDb");
+
+            // choose which implementation for the service at runtime!
+            if (connString == null || Configuration.GetValue<bool>("UseInMemoryRepo"))
+            {
+                services.AddScoped<IMovieRepository, MovieRepository>();
+            }
+            else
+            {
+                services.AddScoped<IMovieRepository, MovieDbRepository>();
+
+                services.AddDbContext<MovieDbContext>(options =>
+                {
+                    options.UseSqlServer(connString);
+                });
+                // that registers a DbContext with scoped lifetime.
+                // (one instance per HTTP request.)
+            }
+
+
             // the "scoped" part means... reuse the same MovieRepository instance
             // during a given HTTP request... but make a new one
             // for the next HTTP request
