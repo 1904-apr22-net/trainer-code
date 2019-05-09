@@ -20,9 +20,9 @@ namespace MovieApp.UI.Controllers
 
         public IActionResult Index()
         {
-            var movies = MovieRepo.GetAll();
+            IEnumerable<Movie> movies = MovieRepo.GetAll();
 
-            var model = movies.Select(m => new MovieViewModel
+            IEnumerable<MovieViewModel> model = movies.Select(m => new MovieViewModel
             {
                 Id = m.Id,
                 Title = m.Title,
