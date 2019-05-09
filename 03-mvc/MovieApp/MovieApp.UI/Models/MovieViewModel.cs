@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MovieApp.BL;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,9 +13,24 @@ namespace MovieApp.UI.Models
     // in your business logic... or (2) how Entity Framework thinks about the data.)
     public class MovieViewModel
     {
+        [Display(Name = "ID")]
         public int Id { get; set; }
+
+        [Required] // null or empty string not allowed.
+        [MinLength(3)]
+        //[RegularExpression()]
         public string Title { get; set; }
-        public DateTime DateReleased { get; set; }
-        public GenreViewModel Genre { get; set; }
+
+        [Display(Name = "Release Date")]
+        [DataType(DataType.Date)]
+        [Required]
+        public DateTime? DateReleased { get; set; }
+
+        [Required]
+        public Genre Genre { get; set; }
+
+        // the view can only see what is on the model that you pass to it
+        // so if the view needs to know about it, you need it on the model
+        public List<Genre> Genres { get; set; }
     }
 }

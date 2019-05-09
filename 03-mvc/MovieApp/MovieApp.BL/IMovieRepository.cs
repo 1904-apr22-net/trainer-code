@@ -8,5 +8,9 @@ namespace MovieApp.BL
     {
         IEnumerable<Movie> GetAll();
         void Create(Movie movie);
+
+        IEnumerable<Genre> GetAllGenres();
+
+        Genre GetGenreById(int id);
     }
 }

@@ -21,6 +21,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.DateReleased)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Genre)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -28,6 +31,11 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                @* Razor has two families of helpers, tag helpers (look like HTML) *@
+                @* and HTML helpers like these here, which look like C# *@
+
+                @* when HTML helpers take lambdas, they don't really execute them *@
+                @* they are just for the view engine to "look at" *@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
@@ -37,10 +45,13 @@
                 @Html.DisplayFor(modelItem => item.DateReleased)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Genre.Name)
+            </td>
+            <td>
                 @*
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
                 *@
             </td>
         </tr>
