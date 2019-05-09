@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MovieApp.BL;
@@ -36,6 +37,13 @@ namespace MovieApp.UI
             // it is in Startup.ConfigureServices that we
             // register dependencies to be injected as constructor parameters
             // whenever the framework makes a class that requires those parameters.
+
+            services.AddDbContext<MovieDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("MovieCodeFirstDb"));
+            });
+            // that registers a DbContext with scoped lifetime.
+            // (one instance per HTTP request.)
 
             // this means: "anytime someone requests an IMovieRepository,
             // create a MovieRepository and give it to him."
