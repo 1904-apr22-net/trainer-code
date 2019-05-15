@@ -14,13 +14,34 @@ variables:
 
 steps:
 
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'sonarcloud-escalonn'
+    organization: 'escalonn-github'
+    scannerMode: 'MSBuild'
+    projectKey: 'escalona1904restreviews'
+    extraProperties: |
+      sonar.cs.opencover.reportsPaths="$(Build.ArtifactStagingDirectory)/coverage/*"
+
 - script: dotnet build --configuration $(buildConfiguration)
   workingDirectory: $(solutionPath)
   displayName: 'dotnet build $(buildConfiguration)'
 
-- script: dotnet test --configuration $(buildConfiguration)
+- script: dotnet test
+    --configuration $(buildConfiguration)
+    /p:CollectCoverage=true
+    /p:CoverletOutputFormat=opencover
+    /p:CoverletOutput='$(Build.ArtifactStagingDirectory)/coverage/'
+    /p:Exclude="[xunit*]*"
   workingDirectory: $(solutionPath)
   displayName: 'dotnet test $(buildConfiguration)'
+
+- task: SonarCloudAnalyze@1
+  inputs: {}
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '60'
 
 - task: DotNetCoreCLI@2
   inputs:
