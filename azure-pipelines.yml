@@ -26,7 +26,8 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
-    projects: $(solutionPath)/RestaurantReviews.WebUI
+    publishWebProjects: false
+    projects: $(solutionPath)/RestaurantReviews.WebUI/*.csproj
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
 
