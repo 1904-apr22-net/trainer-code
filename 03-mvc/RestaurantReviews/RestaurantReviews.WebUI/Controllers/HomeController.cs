@@ -12,6 +12,7 @@ namespace RestaurantReviews.WebUI.Controllers
     {
         public IActionResult Index()
         {
+            compile error!
             return View();
         }
 
