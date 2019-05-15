@@ -19,6 +19,7 @@ steps:
   workingDirectory: $(solutionPath)
   displayName: 'dotnet build $(buildConfiguration)'
 
-- script: dotnet test
-  displayName: dotnet test
+- script: dotnet test --configuration $(buildConfiguration)
+  workingDirectory: $(solutionPath)
+  displayName: 'dotnet test $(buildConfiguration)'
 
