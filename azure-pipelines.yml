@@ -36,4 +36,4 @@ steps:
     azureSubscription: 'Pay-As-You-Go(0518cd5b-d389-4983-9496-cdcae31dcc60)'
     appType: 'webApp'
     WebAppName: '1904-rest-reviews'
-    packageForLinux: '$(System.ArtifactStagingDirectory)/**/*.zip'
+    packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
