@@ -14,5 +14,11 @@ variables:
   solutionPath: '03-mvc/RestaurantReviews'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration) $(solutionPath)
-  displayName: 'dotnet build $(buildConfiguration) $(solutionPath)'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  workingDirectory: $(solutionPath)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- script: dotnet test
+  displayName: dotnet test
+
