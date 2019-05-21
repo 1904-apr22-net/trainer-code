@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="9703d36e-47de-4cc4-a7ef-cda89e81ad52" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:55828/UnitConversionService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="UnitConversionService.xsd" MetadataType="Schema" ID="13f44c2e-f0ac-4464-87e0-312fe05d8705" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd0" />
+    <MetadataFile FileName="UnitConversionService1.xsd" MetadataType="Schema" ID="715fe180-387c-486a-9175-0e0778615d9f" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd1" />
+    <MetadataFile FileName="UnitConversionService.wsdl" MetadataType="Wsdl" ID="b5283599-474e-49df-913f-945dfbc8633f" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?wsdl" />
+    <MetadataFile FileName="UnitConversionService2.xsd" MetadataType="Schema" ID="37d2aa62-5da8-4a7d-a59d-da6d56153ff1" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd2" />
+    <MetadataFile FileName="UnitConversionService.disco" MetadataType="Disco" ID="78b92b7f-6070-456b-8283-3526aed87060" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

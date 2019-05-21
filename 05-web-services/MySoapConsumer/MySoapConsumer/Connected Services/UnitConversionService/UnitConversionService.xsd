@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:55828/UnitConversionService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/MySoapService" />
+  <xs:element name="FeetToMeters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="feet" type="xs:double" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FeetToMetersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="FeetToMetersResult" type="xs:double" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ConvertTemperature">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/MySoapService" minOccurs="0" name="temperature" nillable="true" type="q1:Temperature" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ConvertTemperatureResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/MySoapService" minOccurs="0" name="ConvertTemperatureResult" nillable="true" type="q2:Temperature" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
