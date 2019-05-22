@@ -21,14 +21,67 @@ namespace DogRestService.API.Repositories
             _list = list ?? throw new ArgumentNullException(nameof(list));
         }
 
-        public IEnumerable<Dog> GetAll()
+        public IEnumerable<Dog> GetAll(string breed = null)
         {
-            return _list;
+            IEnumerable<Dog> result = _list;
+            if (breed != null)
+            {
+                result = result.Where(x => x.Breed == breed);
+            }
+            return result;
         }
 
         public Dog Get(int id)
         {
-            return _list.First(x => x.Id == id);
+            return _list.FirstOrDefault(x => x.Id == id);
+        }
+
+        public bool Update(Dog dog)
+        {
+            if (!dog.Validate() && dog.Id != 0)
+            {
+                throw new ArgumentException("invalid dog", nameof(dog));
+            }
+
+            var deleted = Delete(dog.Id);
+
+            if (!deleted)
+            {
+                return false;
+            }
+
+            Create(dog, ignoreId: false);
+
+            return true;
+        }
+
+        public int Create(Dog dog, bool ignoreId = true)
+        {
+            if (dog is null)
+            {
+                throw new ArgumentNullException(nameof(dog));
+            }
+            if (!dog.Validate())
+            {
+                throw new ArgumentException("invalid dog", nameof(dog));
+            }
+            if (ignoreId)
+            {
+                dog.Id = (_list.Count == 0) ? 1 : (_list.Max(x => x.Id) + 1);
+            }
+            _list.Add(dog);
+            return dog.Id;
+        }
+
+        public bool Delete(int id)
+        {
+            // pattern matching syntax
+            if (Get(id) is Dog dog)
+            {
+                _list.Remove(dog);
+                return true;
+            }
+            return false;
         }
     }
 }
