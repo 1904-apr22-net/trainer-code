@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DogRestService.API", "DogRestService.API\DogRestService.API.csproj", "{45E9C7E9-3C16-4CD3-B1E4-D098773F008B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45E9C7E9-3C16-4CD3-B1E4-D098773F008B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45E9C7E9-3C16-4CD3-B1E4-D098773F008B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45E9C7E9-3C16-4CD3-B1E4-D098773F008B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45E9C7E9-3C16-4CD3-B1E4-D098773F008B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1CCC92D9-2C43-481B-9CD6-B5C8FDF27ADD}
+	EndGlobalSection
+EndGlobal

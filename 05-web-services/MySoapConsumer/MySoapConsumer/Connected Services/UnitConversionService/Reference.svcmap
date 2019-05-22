@@ -23,10 +23,11 @@
   </MetadataSources>
   <Metadata>
     <MetadataFile FileName="UnitConversionService.xsd" MetadataType="Schema" ID="13f44c2e-f0ac-4464-87e0-312fe05d8705" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd0" />
-    <MetadataFile FileName="UnitConversionService1.xsd" MetadataType="Schema" ID="715fe180-387c-486a-9175-0e0778615d9f" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd1" />
     <MetadataFile FileName="UnitConversionService.wsdl" MetadataType="Wsdl" ID="b5283599-474e-49df-913f-945dfbc8633f" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?wsdl" />
-    <MetadataFile FileName="UnitConversionService2.xsd" MetadataType="Schema" ID="37d2aa62-5da8-4a7d-a59d-da6d56153ff1" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd2" />
     <MetadataFile FileName="UnitConversionService.disco" MetadataType="Disco" ID="78b92b7f-6070-456b-8283-3526aed87060" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?disco" />
+    <MetadataFile FileName="UnitConversionService3.xsd" MetadataType="Schema" ID="add8b624-247b-4d60-af8e-3b6e1ce3ce33" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd3" />
+    <MetadataFile FileName="UnitConversionService2.xsd" MetadataType="Schema" ID="37d2aa62-5da8-4a7d-a59d-da6d56153ff1" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd2" />
+    <MetadataFile FileName="UnitConversionService1.xsd" MetadataType="Schema" ID="715fe180-387c-486a-9175-0e0778615d9f" SourceId="1" SourceUrl="http://localhost:55828/UnitConversionService.svc?xsd=xsd1" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

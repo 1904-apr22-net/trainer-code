@@ -89,7 +89,15 @@ namespace MySoapConsumer.UnitConversionService {
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="UnitConversionService.IUnitConversionService")]
     public interface IUnitConversionService {
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUnitConversionService/GetServiceVersion", ReplyAction="http://tempuri.org/IUnitConversionService/GetServiceVersionResponse")]
+        string GetServiceVersion();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUnitConversionService/GetServiceVersion", ReplyAction="http://tempuri.org/IUnitConversionService/GetServiceVersionResponse")]
+        System.Threading.Tasks.Task<string> GetServiceVersionAsync();
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUnitConversionService/FeetToMeters", ReplyAction="http://tempuri.org/IUnitConversionService/FeetToMetersResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(System.InvalidOperationException), Action="http://tempuri.org/IUnitConversionService/FeetToMetersInvalidOperationExceptionFa" +
+            "ult", Name="InvalidOperationException", Namespace="http://schemas.datacontract.org/2004/07/System")]
         double FeetToMeters(double feet);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUnitConversionService/FeetToMeters", ReplyAction="http://tempuri.org/IUnitConversionService/FeetToMetersResponse")]
@@ -127,6 +135,14 @@ namespace MySoapConsumer.UnitConversionService {
         
         public UnitConversionServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
+        }
+        
+        public string GetServiceVersion() {
+            return base.Channel.GetServiceVersion();
+        }
+        
+        public System.Threading.Tasks.Task<string> GetServiceVersionAsync() {
+            return base.Channel.GetServiceVersionAsync();
         }
         
         public double FeetToMeters(double feet) {

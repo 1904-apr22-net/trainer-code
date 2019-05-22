@@ -4,14 +4,24 @@
     <xsd:schema targetNamespace="http://tempuri.org/Imports">
       <xsd:import schemaLocation="http://localhost:55828/UnitConversionService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
       <xsd:import schemaLocation="http://localhost:55828/UnitConversionService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://localhost:55828/UnitConversionService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/MySoapService" />
+      <xsd:import schemaLocation="http://localhost:55828/UnitConversionService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/System" />
+      <xsd:import schemaLocation="http://localhost:55828/UnitConversionService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/MySoapService" />
     </xsd:schema>
   </wsdl:types>
+  <wsdl:message name="IUnitConversionService_GetServiceVersion_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetServiceVersion" />
+  </wsdl:message>
+  <wsdl:message name="IUnitConversionService_GetServiceVersion_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetServiceVersionResponse" />
+  </wsdl:message>
   <wsdl:message name="IUnitConversionService_FeetToMeters_InputMessage">
     <wsdl:part name="parameters" element="tns:FeetToMeters" />
   </wsdl:message>
   <wsdl:message name="IUnitConversionService_FeetToMeters_OutputMessage">
     <wsdl:part name="parameters" element="tns:FeetToMetersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUnitConversionService_FeetToMeters_InvalidOperationExceptionFault_FaultMessage">
+    <wsdl:part xmlns:q1="http://schemas.datacontract.org/2004/07/System" name="detail" element="q1:InvalidOperationException" />
   </wsdl:message>
   <wsdl:message name="IUnitConversionService_ConvertTemperature_InputMessage">
     <wsdl:part name="parameters" element="tns:ConvertTemperature" />
@@ -20,9 +30,14 @@
     <wsdl:part name="parameters" element="tns:ConvertTemperatureResponse" />
   </wsdl:message>
   <wsdl:portType name="IUnitConversionService">
+    <wsdl:operation name="GetServiceVersion">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUnitConversionService/GetServiceVersion" message="tns:IUnitConversionService_GetServiceVersion_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUnitConversionService/GetServiceVersionResponse" message="tns:IUnitConversionService_GetServiceVersion_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="FeetToMeters">
       <wsdl:input wsaw:Action="http://tempuri.org/IUnitConversionService/FeetToMeters" message="tns:IUnitConversionService_FeetToMeters_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IUnitConversionService/FeetToMetersResponse" message="tns:IUnitConversionService_FeetToMeters_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://tempuri.org/IUnitConversionService/FeetToMetersInvalidOperationExceptionFault" name="InvalidOperationExceptionFault" message="tns:IUnitConversionService_FeetToMeters_InvalidOperationExceptionFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="ConvertTemperature">
       <wsdl:input wsaw:Action="http://tempuri.org/IUnitConversionService/ConvertTemperature" message="tns:IUnitConversionService_ConvertTemperature_InputMessage" />
@@ -31,6 +46,15 @@
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IUnitConversionService" type="tns:IUnitConversionService">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetServiceVersion">
+      <soap:operation soapAction="http://tempuri.org/IUnitConversionService/GetServiceVersion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="FeetToMeters">
       <soap:operation soapAction="http://tempuri.org/IUnitConversionService/FeetToMeters" style="document" />
       <wsdl:input>
@@ -39,6 +63,9 @@
       <wsdl:output>
         <soap:body use="literal" />
       </wsdl:output>
+      <wsdl:fault name="InvalidOperationExceptionFault">
+        <soap:fault use="literal" name="InvalidOperationExceptionFault" namespace="" />
+      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="ConvertTemperature">
       <soap:operation soapAction="http://tempuri.org/IUnitConversionService/ConvertTemperature" style="document" />

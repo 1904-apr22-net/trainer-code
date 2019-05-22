@@ -11,8 +11,21 @@ namespace MySoapService
     // NOTE: In order to launch WCF Test Client for testing this service, please select UnitConversionService.svc or UnitConversionService.svc.cs at the Solution Explorer and start debugging.
     public class UnitConversionService : IUnitConversionService
     {
+        private readonly string _version = "1.0.0";
+
+        public string GetServiceVersion() => _version;
+
         public double FeetToMeters(double feet)
         {
+            if (feet < 0)
+            {
+                // we would use something like this to
+                // wrap exceptions coming from third-party libraries
+                // if it's in our control, we could just use a plain faultexception
+                throw new FaultException<InvalidOperationException>(
+                    detail: new InvalidOperationException("negative lengths not allowed"),
+                    reason: "negative lengths not allowed");
+            }
             return 0.3048 * feet;
         }
 

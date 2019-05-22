@@ -13,8 +13,12 @@ namespace MySoapService
     [ServiceContract] // means, this interface will be a service having some operations.
     public interface IUnitConversionService
     {
+        [OperationContract]
+        string GetServiceVersion();
+
         [OperationContract] // means, this method will be accessible as a SOAP operation
         //[OperationBehavior] // can configure transaction semantics, etc
+        [FaultContract(typeof(InvalidOperationException))]
         double FeetToMeters(double feet);
 
         [OperationContract]
