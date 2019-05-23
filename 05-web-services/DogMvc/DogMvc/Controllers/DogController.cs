@@ -6,14 +6,16 @@ using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using DogMvc.ApiModels;
 using DogMvc.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DogMvc.Controllers
 {
+    [Authorize]
     public class DogController : Controller
     {
-        private readonly string _url = "https://localhost:44302/api/dog";
+        private readonly string _url = "https://localhost:5001/api/dog";
         private readonly HttpClient _httpClient;
 
         public DogController(HttpClient httpClient)
@@ -103,6 +105,7 @@ namespace DogMvc.Controllers
         }
 
         // GET: Dog/Edit/5
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> Edit(int id)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/{id}");
@@ -122,6 +125,7 @@ namespace DogMvc.Controllers
         // POST: Dog/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> Edit(int id, DogViewModel viewModel)
         {
             try
@@ -153,6 +157,7 @@ namespace DogMvc.Controllers
         }
 
         // GET: Dog/Delete/5
+        [Authorize(Roles = "Administrator, Moderator")] // must be one of these roles
         public async Task<ActionResult> Delete(int id)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/{id}");
@@ -170,9 +175,10 @@ namespace DogMvc.Controllers
         }
 
         // POST: Dog/Delete/5
-        [HttpPost("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeletePost(int id)
+        [Authorize(Roles = "Administrator, Moderator")]
+        public async Task<ActionResult> Delete(int id, IFormCollection collection)
         {
             try
             {
