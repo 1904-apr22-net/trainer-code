@@ -16,6 +16,8 @@ namespace DogRestService.API.Controllers
 
         // GET: api/Dog?breed=doberman
         [HttpGet]
+        //[Produces("application/xml")]
+        //[FormatFilter]
         public IEnumerable<Dog> Get([FromQuery]string breed = null) => _repo.GetAll(breed);
 
         // GET: api/Dog/5
