@@ -13,7 +13,7 @@ namespace DogMvc.Controllers
 {
     public class DogController : Controller
     {
-        private readonly string _url = "https://localhost:5001/api/dog";
+        private readonly string _url = "https://localhost:44302/api/dog";
         private readonly HttpClient _httpClient;
 
         public DogController(HttpClient httpClient)
@@ -28,8 +28,7 @@ namespace DogMvc.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                // should return some error view
-                return View(new DogViewModel[0]);
+                return View("Error", new ErrorViewModel());
             }
 
             // deserialize from JSON
@@ -41,9 +40,21 @@ namespace DogMvc.Controllers
         }
 
         // GET: Dog/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return View("Error", new ErrorViewModel());
+            }
+
+            // deserialize from JSON
+            Dog dog = await response.Content.ReadAsAsync<Dog>();
+
+            DogViewModel model = Mapper.Map(dog);
+
+            return View(model);
         }
 
         // GET: Dog/Create
@@ -92,48 +103,91 @@ namespace DogMvc.Controllers
         }
 
         // GET: Dog/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return View("Error", new ErrorViewModel());
+            }
+
+            Dog dog = await response.Content.ReadAsAsync<Dog>();
+
+            DogViewModel model = Mapper.Map(dog);
+
+            return View(model);
         }
 
         // POST: Dog/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id, DogViewModel viewModel)
         {
             try
             {
-                // TODO: Add update logic here
+                var dog = new Dog
+                {
+                    Name = viewModel.Name,
+                    Breed = viewModel.Breed
+                };
+
+                HttpResponseMessage response = await _httpClient.PutAsync(
+                    $"{_url}/{id}", dog, new JsonMediaTypeFormatter());
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    // could check specifically for 400 and look inside
+                    // body for the model errors, to then add to the ModelState here.
+                    ModelState.AddModelError("", "Invalid data");
+                    return View(viewModel);
+                }
 
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                ModelState.AddModelError("", "An error occurred");
+                return View(viewModel);
             }
         }
 
         // GET: Dog/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return View("Error", new ErrorViewModel());
+            }
+
+            Dog dog = await response.Content.ReadAsAsync<Dog>();
+
+            DogViewModel model = Mapper.Map(dog);
+
+            return View(model);
         }
 
         // POST: Dog/Delete/5
-        [HttpPost]
+        [HttpPost("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeletePost(int id)
         {
             try
             {
-                // TODO: Add delete logic here
+                HttpResponseMessage response = await _httpClient.DeleteAsync($"{_url}/{id}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return View("Error", new ErrorViewModel());
+                }
 
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View("Error", new ErrorViewModel());
             }
         }
     }

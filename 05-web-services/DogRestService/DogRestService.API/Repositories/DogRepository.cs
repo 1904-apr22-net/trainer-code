@@ -1,4 +1,6 @@
 ﻿using DogRestService.API.Models;
+using DogRestService.DAL;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,54 +10,49 @@ namespace DogRestService.API.Repositories
 {
     public class DogRepository
     {
-        private readonly List<Dog> _list;
+        private readonly DogDbContext _dbContext;
 
-        public DogRepository() : this(new List<Dog>
-        {
-            new Dog { Id = 1, Breed = "Golden retriever", Name = "Bill" }
-        })
-        { }
-
-        public DogRepository(List<Dog> list)
-        {
-            _list = list ?? throw new ArgumentNullException(nameof(list));
-        }
+        public DogRepository(DogDbContext dbContext) =>
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
         public IEnumerable<Dog> GetAll(string breed = null)
         {
-            IEnumerable<Dog> result = _list;
+            IQueryable<DAL.Entities.Dog> data = _dbContext.Dog;
             if (breed != null)
             {
-                result = result.Where(x => x.Breed == breed);
+                data = data.Where(x => x.Breed == breed);
             }
-            return result;
+            IEnumerable<Dog> dogs = data.Select(Mapper.Map);
+            return dogs;
         }
 
-        public Dog Get(int id)
+        public async Task<Dog> GetAsync(int id)
         {
-            return _list.FirstOrDefault(x => x.Id == id);
+            DAL.Entities.Dog entity = await _dbContext.Dog.FirstOrDefaultAsync(x => x.Id == id);
+            return entity is null ? null : Mapper.Map(entity);
         }
 
-        public bool Update(Dog dog)
+        public async Task<bool> UpdateAsync(Dog dog)
         {
             if (!dog.Validate() && dog.Id != 0)
             {
                 throw new ArgumentException("invalid dog", nameof(dog));
             }
 
-            var deleted = Delete(dog.Id);
+            DAL.Entities.Dog existing = await _dbContext.Dog.FindAsync(dog.Id);
 
-            if (!deleted)
+            if (existing is null)
             {
                 return false;
             }
 
-            Create(dog, ignoreId: false);
-
+            DAL.Entities.Dog entity = Mapper.Map(dog);
+            _dbContext.Entry(existing).CurrentValues.SetValues(entity);
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
-        public int Create(Dog dog, bool ignoreId = true)
+        public async Task<int> CreateAsync(Dog dog)
         {
             if (dog is null)
             {
@@ -65,23 +62,24 @@ namespace DogRestService.API.Repositories
             {
                 throw new ArgumentException("invalid dog", nameof(dog));
             }
-            if (ignoreId)
-            {
-                dog.Id = (_list.Count == 0) ? 1 : (_list.Max(x => x.Id) + 1);
-            }
-            _list.Add(dog);
+            DAL.Entities.Dog entity = Mapper.Map(dog);
+            _dbContext.Add(entity);
+            await _dbContext.SaveChangesAsync();
             return dog.Id;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            // pattern matching syntax
-            if (Get(id) is Dog dog)
+            DAL.Entities.Dog existing = await _dbContext.Dog.FindAsync(id);
+
+            if (existing is null)
             {
-                _list.Remove(dog);
-                return true;
+                return false;
             }
-            return false;
+
+            _dbContext.Remove(existing);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

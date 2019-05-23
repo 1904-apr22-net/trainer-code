@@ -3,6 +3,7 @@ using DogRestService.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DogRestService.API.Controllers
 {
@@ -22,9 +23,9 @@ namespace DogRestService.API.Controllers
 
         // GET: api/Dog/5
         [HttpGet("{id}", Name = "Get")] // this route name is used below in CreatedAtRoute
-        public ActionResult<Dog> Get(int id)
+        public async Task<ActionResult<Dog>> Get(int id)
         {
-            if (_repo.Get(id) is Dog dog)
+            if (await _repo.GetAsync(id) is Dog dog)
             {
                 return dog; // 200 OK
             }
@@ -33,7 +34,7 @@ namespace DogRestService.API.Controllers
 
         // POST: api/Dog
         [HttpPost]
-        public IActionResult Post([FromBody] Dog dog)
+        public async Task<IActionResult> Post([FromBody] Dog dog)
         {
             // there is automatic validation of Data Annotations,
             // wrapping ModelState errors into a 400 Bad Request.
@@ -41,19 +42,20 @@ namespace DogRestService.API.Controllers
             int id;
             try
             {
-                id = _repo.Create(dog);
+                id = await _repo.CreateAsync(dog);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
+            Dog model = await _repo.GetAsync(id);
             // there's also CreatedAtAction, same purpose
-            return CreatedAtRoute("Get", new { Id = id }, Get(id)); // 201 Created
+            return CreatedAtRoute("Get", new { Id = id }, model); // 201 Created
         }
 
         // PUT: api/Dog/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Dog dog)
+        public async Task<IActionResult> Put(int id, [FromBody] Dog dog)
         {
             if (Get(id) is null)
             {
@@ -62,7 +64,7 @@ namespace DogRestService.API.Controllers
             dog.Id = id;
             try
             {
-                var success = _repo.Update(dog);
+                var success = await _repo.UpdateAsync(dog);
                 if (!success)
                 {
                     return BadRequest("invalid request"); // 400 Bad Request
@@ -77,9 +79,9 @@ namespace DogRestService.API.Controllers
 
         // DELETE: api/Dog/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var success = _repo.Delete(id);
+            var success = await _repo.DeleteAsync(id);
             if (!success)
             {
                 return NotFound(); // 404 Not Found
