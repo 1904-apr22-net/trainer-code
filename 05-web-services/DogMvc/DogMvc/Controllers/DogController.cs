@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using DogMvc.ApiModels;
 using DogMvc.Models;
@@ -12,6 +13,7 @@ namespace DogMvc.Controllers
 {
     public class DogController : Controller
     {
+        private readonly string _url = "https://localhost:5001/api/dog";
         private readonly HttpClient _httpClient;
 
         public DogController(HttpClient httpClient)
@@ -22,9 +24,8 @@ namespace DogMvc.Controllers
         // GET: Dog
         public async Task<ActionResult> Index()
         {
-            var url = "https://localhost:5001/api/dog";
 
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(_url);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -60,17 +61,39 @@ namespace DogMvc.Controllers
         // POST: Dog/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(DogViewModel viewModel)
         {
             try
             {
-                // TODO: Add insert logic here
+                if (!ModelState.IsValid)
+                {
+                    return View(viewModel);
+                }
+
+                var dog = new Dog
+                {
+                    Name = viewModel.Name,
+                    Breed = viewModel.Breed
+                };
+
+                HttpResponseMessage response = await _httpClient.PostAsync(
+                    _url, dog, new JsonMediaTypeFormatter());
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    // could check specifically for 400 and look inside
+                    // body for the model errors, to then add to the ModelState here.
+                    ModelState.AddModelError("", "Invalid data");
+                    return View(viewModel);
+                }
+
+                // i don't actually need the response body
 
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(viewModel);
             }
         }
 
