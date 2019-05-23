@@ -24,7 +24,6 @@ namespace DogMvc.Controllers
         // GET: Dog
         public async Task<ActionResult> Index()
         {
-
             HttpResponseMessage response = await _httpClient.GetAsync(_url);
 
             if (!response.IsSuccessStatusCode)
@@ -34,14 +33,9 @@ namespace DogMvc.Controllers
             }
 
             // deserialize from JSON
-            var dogs = await response.Content.ReadAsAsync<IEnumerable<Dog>>();
+            IEnumerable<Dog> dogs = await response.Content.ReadAsAsync<IEnumerable<Dog>>();
 
-            var model = dogs.Select(x => new DogViewModel
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Breed = x.Breed
-            });
+            IEnumerable<DogViewModel> model = dogs.Select(Mapper.Map);
 
             return View(model);
         }
