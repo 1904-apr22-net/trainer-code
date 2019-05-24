@@ -63,6 +63,7 @@ namespace DogMvc.Controllers
         }
 
         // GET: Dog/Create
+        [Authorize]
         public async Task<ActionResult> Create()
         {
             if (User.IsInRole("Administrator"))
@@ -91,6 +92,7 @@ namespace DogMvc.Controllers
         // POST: Dog/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> Create(DogViewModel viewModel)
         {
             try
@@ -139,6 +141,7 @@ namespace DogMvc.Controllers
         }
 
         // GET: Dog/Edit/5
+        [Authorize]
         public async Task<ActionResult> Edit(int id)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"{_dogsUrl}/{id}");
@@ -182,6 +185,7 @@ namespace DogMvc.Controllers
         // POST: Dog/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> Edit(int id, DogViewModel viewModel)
         {
             try
@@ -190,8 +194,17 @@ namespace DogMvc.Controllers
                 {
                     Name = viewModel.Name,
                     Breed = viewModel.Breed,
-                    Owner = new Account { Email = viewModel.OwnerEmail }
+                    Owner = new Account()
                 };
+
+                if (User.IsInRole("Administrator"))
+                {
+                    dog.Owner.Email = viewModel.OwnerEmail;
+                }
+                else
+                {
+                    dog.Owner.Email = User.FindFirst(ClaimTypes.Email).Value;
+                }
 
                 HttpResponseMessage response = await _httpClient.PutAsync(
                     $"{_dogsUrl}/{id}", dog, new JsonMediaTypeFormatter());

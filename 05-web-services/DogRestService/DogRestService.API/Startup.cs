@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using DogRestService.API.Repositories;
 using DogRestService.DAL;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +35,13 @@ namespace DogRestService.API
             services.AddDbContext<DogDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DogDb")));
 
+            //services.AddAuthentication(sharedOptions =>
+            //{
+            //    sharedOptions.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            //})
+            //services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+            //    .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
+
             services.AddMvc(options =>
             {
                 options.ReturnHttpNotAcceptable = true;
@@ -54,6 +64,9 @@ namespace DogRestService.API
             }
 
             app.UseHttpsRedirection();
+
+            //app.UseAuthentication();
+
             app.UseMvc();
         }
     }
