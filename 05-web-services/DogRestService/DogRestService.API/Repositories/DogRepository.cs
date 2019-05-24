@@ -15,9 +15,14 @@ namespace DogRestService.API.Repositories
         public DogRepository(DogDbContext dbContext) =>
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _dbContext.Dog.Where(d => d.Id == id).AnyAsync();
+        }
+
         public IEnumerable<Dog> GetAll(string breed = null)
         {
-            IQueryable<DAL.Entities.Dog> data = _dbContext.Dog;
+            IQueryable<DAL.Entities.Dog> data = _dbContext.Dog.Include(d => d.Owner);
             if (breed != null)
             {
                 data = data.Where(x => x.Breed == breed);
@@ -25,10 +30,15 @@ namespace DogRestService.API.Repositories
             IEnumerable<Dog> dogs = data.Select(Mapper.Map);
             return dogs;
         }
+        public IEnumerable<Account> GetAllAccounts() =>
+            _dbContext.Account.Select(Mapper.Map);
+
+        public async Task<int> GetAccountIdByEmailAsync(string email) =>
+            await _dbContext.Account.Where(a => a.Email == email).Select(a => a.Id).FirstOrDefaultAsync();
 
         public async Task<Dog> GetAsync(int id)
         {
-            DAL.Entities.Dog entity = await _dbContext.Dog.FirstOrDefaultAsync(x => x.Id == id);
+            DAL.Entities.Dog entity = await _dbContext.Dog.Include(d => d.Owner).FirstOrDefaultAsync(x => x.Id == id);
             return entity is null ? null : Mapper.Map(entity);
         }
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DogRestService.API.Models
 {
@@ -15,6 +11,8 @@ namespace DogRestService.API.Models
 
         [Required]
         public string Name { get; set; }
+
+        public Account Owner { get; set; }
 
         public bool Validate()
         {

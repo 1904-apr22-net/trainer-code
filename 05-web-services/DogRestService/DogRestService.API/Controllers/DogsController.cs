@@ -9,17 +9,18 @@ namespace DogRestService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DogController : ControllerBase
+    public class DogsController : ControllerBase
     {
         private readonly DogRepository _repo;
 
-        public DogController(DogRepository repo) => _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+        public DogsController(DogRepository repo) => _repo = repo ?? throw new ArgumentNullException(nameof(repo));
 
         // GET: api/Dog?breed=doberman
         [HttpGet]
         //[Produces("application/xml")]
         //[FormatFilter]
-        public IEnumerable<Dog> Get([FromQuery]string breed = null) => _repo.GetAll(breed);
+        public IEnumerable<Dog> Get([FromQuery]string breed = null) =>
+            _repo.GetAll(breed);
 
         // GET: api/Dog/5
         [HttpGet("{id}", Name = "Get")] // this route name is used below in CreatedAtRoute
@@ -38,32 +39,37 @@ namespace DogRestService.API.Controllers
         {
             // there is automatic validation of Data Annotations,
             // wrapping ModelState errors into a 400 Bad Request.
-
-            int id;
             try
             {
-                id = await _repo.CreateAsync(dog);
+                dog.Owner.Id = await _repo.GetAccountIdByEmailAsync(dog.Owner.Email);
+
+                var id = await _repo.CreateAsync(dog);
+
+                Dog model = await _repo.GetAsync(id);
+
+                // there's also CreatedAtAction, same purpose
+                return CreatedAtRoute("Get", new { Id = id }, model); // 201 Created
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            Dog model = await _repo.GetAsync(id);
-            // there's also CreatedAtAction, same purpose
-            return CreatedAtRoute("Get", new { Id = id }, model); // 201 Created
         }
 
         // PUT: api/Dog/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Dog dog)
         {
-            if (Get(id) is null)
-            {
-                return NotFound(); // 404 Not Found
-            }
-            dog.Id = id;
             try
             {
+                if (!(await _repo.ExistsAsync(id)))
+                {
+                    return NotFound(); // 404 Not Found
+                }
+                dog.Id = id;
+
+                dog.Owner.Id = await _repo.GetAccountIdByEmailAsync(dog.Owner.Email);
+
                 var success = await _repo.UpdateAsync(dog);
                 if (!success)
                 {

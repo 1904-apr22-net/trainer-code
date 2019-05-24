@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DogMvc.ApiModels;
 using DogMvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DogMvc.Controllers
 {
     [Authorize]
     public class DogController : Controller
     {
-        private readonly string _url = "https://localhost:5001/api/dog";
+        private readonly string _dogsUrl = "https://localhost:44302/api/dogs";
+        private readonly string _accountsUrl = "https://localhost:44302/api/accounts";
         private readonly HttpClient _httpClient;
 
         public DogController(HttpClient httpClient)
@@ -26,7 +29,7 @@ namespace DogMvc.Controllers
         // GET: Dog
         public async Task<ActionResult> Index()
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(_url);
+            HttpResponseMessage response = await _httpClient.GetAsync(_dogsUrl);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -44,7 +47,7 @@ namespace DogMvc.Controllers
         // GET: Dog/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/{id}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_dogsUrl}/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -60,8 +63,28 @@ namespace DogMvc.Controllers
         }
 
         // GET: Dog/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            if (User.IsInRole("Administrator"))
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(_accountsUrl);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return View("Error", new ErrorViewModel());
+                }
+
+                // deserialize from JSON
+                IEnumerable<Account> accounts = await response.Content.ReadAsAsync<IEnumerable<Account>>();
+
+                var model = new DogViewModel
+                {
+                    Accounts = accounts.Select(a => new SelectListItem(a.Name, a.Email))
+                };
+
+                return View(model);
+            }
+
             return View();
         }
 
@@ -77,14 +100,25 @@ namespace DogMvc.Controllers
                     return View(viewModel);
                 }
 
+                string email;
+                if (User.IsInRole("Administrator"))
+                {
+                    email = viewModel.OwnerEmail;
+                }
+                else
+                {
+                    email = User.FindFirst(ClaimTypes.Email).Value;
+                }
+
                 var dog = new Dog
                 {
                     Name = viewModel.Name,
-                    Breed = viewModel.Breed
+                    Breed = viewModel.Breed,
+                    Owner = new Account { Email = email }
                 };
 
                 HttpResponseMessage response = await _httpClient.PostAsync(
-                    _url, dog, new JsonMediaTypeFormatter());
+                    _dogsUrl, dog, new JsonMediaTypeFormatter());
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -105,10 +139,9 @@ namespace DogMvc.Controllers
         }
 
         // GET: Dog/Edit/5
-        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> Edit(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/{id}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_dogsUrl}/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -119,13 +152,36 @@ namespace DogMvc.Controllers
 
             DogViewModel model = Mapper.Map(dog);
 
+            HttpResponseMessage response2 = await _httpClient.GetAsync(_accountsUrl);
+
+            if (!response2.IsSuccessStatusCode)
+            {
+                return View("Error", new ErrorViewModel());
+            }
+
+            // deserialize from JSON
+            IEnumerable<Account> accounts = await response2.Content.ReadAsAsync<IEnumerable<Account>>();
+
+            if (!User.IsInRole("Administrator"))
+            {
+                if (dog.Owner.Email == User.FindFirst(ClaimTypes.Email).Value)
+                {
+                    accounts = accounts.Where(a => a.Email == dog.Owner.Email);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(AccountController.AccessDenied), "Account");
+                }
+            }
+
+            model.Accounts = accounts.Select(a => new SelectListItem(a.Name, a.Email));
+
             return View(model);
         }
 
         // POST: Dog/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> Edit(int id, DogViewModel viewModel)
         {
             try
@@ -133,14 +189,20 @@ namespace DogMvc.Controllers
                 var dog = new Dog
                 {
                     Name = viewModel.Name,
-                    Breed = viewModel.Breed
+                    Breed = viewModel.Breed,
+                    Owner = new Account { Email = viewModel.OwnerEmail }
                 };
 
                 HttpResponseMessage response = await _httpClient.PutAsync(
-                    $"{_url}/{id}", dog, new JsonMediaTypeFormatter());
+                    $"{_dogsUrl}/{id}", dog, new JsonMediaTypeFormatter());
 
+                // if the user is not allowed to edit this dog, he will be denied by the API
                 if (!response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        return RedirectToAction(nameof(AccountController.AccessDenied), "Account");
+                    }
                     // could check specifically for 400 and look inside
                     // body for the model errors, to then add to the ModelState here.
                     ModelState.AddModelError("", "Invalid data");
@@ -160,7 +222,7 @@ namespace DogMvc.Controllers
         [Authorize(Roles = "Administrator, Moderator")] // must be one of these roles
         public async Task<ActionResult> Delete(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync($"{_url}/{id}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_dogsUrl}/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -182,7 +244,7 @@ namespace DogMvc.Controllers
         {
             try
             {
-                HttpResponseMessage response = await _httpClient.DeleteAsync($"{_url}/{id}");
+                HttpResponseMessage response = await _httpClient.DeleteAsync($"{_dogsUrl}/{id}");
 
                 if (!response.IsSuccessStatusCode)
                 {

@@ -1,7 +1,10 @@
-﻿@model IEnumerable<DogMvc.Models.DogViewModel>
+﻿@using System.Security.Claims
+
+@model IEnumerable<DogMvc.Models.DogViewModel>
 
 @{
     ViewData["Title"] = "Index";
+    var email = User.FindFirst(ClaimTypes.Email).Value;
 }
 
 <h1>Index</h1>
@@ -21,6 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Breed)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OwnerName)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -38,16 +44,21 @@
                     @Html.DisplayFor(modelItem => item.Breed)
                 </td>
                 <td>
-                    @if (User.IsInRole("Administrator"))
+                    @Html.DisplayFor(modelItem => item.OwnerName)
+                </td>
+                <td>
+                    @if (item.OwnerEmail == email || User.IsInRole("Administrator"))
                     {
-                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) @: |
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                        @: |
                     }
 
                     @Html.ActionLink("Details", "Details", new { id = item.Id })
 
                     @if (User.IsInRole("Administrator") || User.IsInRole("Moderator"))
                     {
-                        @: | @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                        @: |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
                     }
                 </td>
             </tr>
