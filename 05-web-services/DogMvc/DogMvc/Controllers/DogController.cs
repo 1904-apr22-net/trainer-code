@@ -3,33 +3,97 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DogMvc.ApiModels;
 using DogMvc.Models;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace DogMvc.Controllers
 {
     [Authorize]
     public class DogController : Controller
     {
-        private readonly string _dogsUrl = "https://localhost:44302/api/dogs";
-        private readonly string _accountsUrl = "https://localhost:44302/api/accounts";
-        private readonly HttpClient _httpClient;
+        public HttpClient HttpClient { get; }
 
-        public DogController(HttpClient httpClient)
+        public IConfiguration Configuration { get; }
+
+        public DogController(HttpClient httpClient, IConfiguration configuration)
         {
-            _httpClient = httpClient;
+            HttpClient = httpClient ?? throw new System.ArgumentNullException(nameof(httpClient));
+            Configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
+        }
+
+        // "where T : class" - this is a generic constraint. something to know about.
+        // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters
+        private async Task<HttpResponseMessage> SendApiRequestAsync<T>(
+            string path, HttpMethod method = null, T body = null) where T : class
+        {
+            var url = $"{Configuration["DogRestService:BaseUrl"]}{path}";
+            var request = new HttpRequestMessage(method ?? HttpMethod.Get, url);
+            var token = await GetBearerTokenAsync();
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            if (body != null)
+            {
+                request.Content = new ObjectContent<T>(body, new JsonMediaTypeFormatter());
+            }
+
+            HttpResponseMessage response = await HttpClient.SendAsync(request);
+            return response;
+        }
+
+        private Task<HttpResponseMessage> SendApiRequestAsync(string path, HttpMethod method = null) =>
+            SendApiRequestAsync<object>(path, method, null);
+
+        // all this auth and httpclient code really belongs in a different
+        // class; some repository or service class
+        // reference: https://github.com/Azure-Samples/active-directory-dotnet-webapp-webapi-openidconnect-aspnetcore
+        private async Task<string> GetBearerTokenAsync()
+        {
+            if (TempData.Peek("DogBearerToken") is string token)
+            {
+                return token;
+            }
+
+            IConfigurationSection adConfig = Configuration.GetSection("AzureAd");
+            IConfigurationSection apiConfig = Configuration.GetSection("DogRestService");
+            var authority = $"{adConfig["Instance"]}{adConfig["TenantId"]}";
+
+            var authContext = new AuthenticationContext(authority);
+            var credential = new ClientCredential(adConfig["ClientId"], apiConfig["ClientSecret"]);
+
+            var userObjectId = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+            var userId = new UserIdentifier(userObjectId, UserIdentifierType.UniqueId);
+
+            AuthenticationResult result = await authContext.AcquireTokenSilentAsync(
+                apiConfig["ClientId"], credential, userId);
+            var newToken = result.AccessToken;
+
+            TempData["DogBearerToken"] = newToken;
+
+            return newToken;
         }
 
         // GET: Dog
         public async Task<ActionResult> Index()
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(_dogsUrl);
+            HttpResponseMessage response;
+            try
+            {
+                response = await SendApiRequestAsync(Configuration["DogRestService:DogsPath"]);
+            }
+            catch (AdalSilentTokenAcquisitionException)
+            {
+                return new ChallengeResult(AzureADDefaults.AuthenticationScheme);
+            }
 
             if (!response.IsSuccessStatusCode)
             {
@@ -47,7 +111,7 @@ namespace DogMvc.Controllers
         // GET: Dog/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync($"{_dogsUrl}/{id}");
+            HttpResponseMessage response = await SendApiRequestAsync($"{Configuration["DogRestService:DogsPath"]}/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -68,7 +132,7 @@ namespace DogMvc.Controllers
         {
             if (User.IsInRole("Administrator"))
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(_accountsUrl);
+                HttpResponseMessage response = await SendApiRequestAsync(Configuration["DogRestService:AccountsPath"]);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -119,8 +183,8 @@ namespace DogMvc.Controllers
                     Owner = new Account { Email = email }
                 };
 
-                HttpResponseMessage response = await _httpClient.PostAsync(
-                    _dogsUrl, dog, new JsonMediaTypeFormatter());
+                HttpResponseMessage response = await SendApiRequestAsync(
+                    Configuration["DogRestService:DogsPath"], HttpMethod.Post, dog);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -144,7 +208,7 @@ namespace DogMvc.Controllers
         [Authorize]
         public async Task<ActionResult> Edit(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync($"{_dogsUrl}/{id}");
+            HttpResponseMessage response = await SendApiRequestAsync($"{Configuration["DogRestService:DogsPath"]}/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -155,7 +219,7 @@ namespace DogMvc.Controllers
 
             DogViewModel model = Mapper.Map(dog);
 
-            HttpResponseMessage response2 = await _httpClient.GetAsync(_accountsUrl);
+            HttpResponseMessage response2 = await SendApiRequestAsync(Configuration["DogRestService:AccountsPath"]);
 
             if (!response2.IsSuccessStatusCode)
             {
@@ -206,8 +270,8 @@ namespace DogMvc.Controllers
                     dog.Owner.Email = User.FindFirst(ClaimTypes.Email).Value;
                 }
 
-                HttpResponseMessage response = await _httpClient.PutAsync(
-                    $"{_dogsUrl}/{id}", dog, new JsonMediaTypeFormatter());
+                HttpResponseMessage response = await SendApiRequestAsync(
+                    $"{Configuration["DogRestService:DogsPath"]}/{id}", HttpMethod.Put, dog);
 
                 // if the user is not allowed to edit this dog, he will be denied by the API
                 if (!response.IsSuccessStatusCode)
@@ -235,7 +299,7 @@ namespace DogMvc.Controllers
         [Authorize(Roles = "Administrator, Moderator")] // must be one of these roles
         public async Task<ActionResult> Delete(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync($"{_dogsUrl}/{id}");
+            HttpResponseMessage response = await SendApiRequestAsync($"{Configuration["DogRestService:DogsPath"]}/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -257,7 +321,8 @@ namespace DogMvc.Controllers
         {
             try
             {
-                HttpResponseMessage response = await _httpClient.DeleteAsync($"{_dogsUrl}/{id}");
+                HttpResponseMessage response = await SendApiRequestAsync(
+                    $"{Configuration["DogRestService:DogsPath"]}/{id}", HttpMethod.Delete);
 
                 if (!response.IsSuccessStatusCode)
                 {

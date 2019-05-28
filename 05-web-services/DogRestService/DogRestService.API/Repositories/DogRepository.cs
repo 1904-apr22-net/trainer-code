@@ -15,10 +15,7 @@ namespace DogRestService.API.Repositories
         public DogRepository(DogDbContext dbContext) =>
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
-        public async Task<bool> ExistsAsync(int id)
-        {
-            return await _dbContext.Dog.Where(d => d.Id == id).AnyAsync();
-        }
+        public async Task<bool> ExistsAsync(int id) => await _dbContext.Dog.Where(d => d.Id == id).AnyAsync();
 
         public IEnumerable<Dog> GetAll(string breed = null)
         {

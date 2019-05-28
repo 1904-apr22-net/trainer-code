@@ -1,8 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
 namespace DogRestService.API.Controllers
 {
@@ -15,37 +12,22 @@ namespace DogRestService.API.Controllers
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
-        {
-            return _list;
-        }
+        public ActionResult<IEnumerable<string>> Get() => _list;
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return _list[id];
-        }
+        public ActionResult<string> Get(int id) => _list[id];
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
-        {
-            _list.Add(value);
-        }
+        public void Post([FromBody] string value) => _list.Add(value);
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-            _list[id] = value;
-        }
+        public void Put(int id, [FromBody] string value) => _list[id] = value;
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            _list.RemoveAt(id);
-        }
+        public void Delete(int id) => _list.RemoveAt(id);
     }
 }

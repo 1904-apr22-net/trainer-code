@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace DogRestService.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class DogsController : ControllerBase
     {
@@ -22,7 +23,6 @@ namespace DogRestService.API.Controllers
         [HttpGet]
         //[Produces("application/xml")]
         //[FormatFilter]
-        //[Authorize]
         public IEnumerable<Dog> Get([FromQuery]string breed = null) =>
             _repo.GetAll(breed);
 
@@ -39,7 +39,6 @@ namespace DogRestService.API.Controllers
 
         // POST: api/Dog
         [HttpPost]
-        //[Authorize]
         public async Task<IActionResult> Post([FromBody] Dog dog)
         {
             // there is automatic validation of Data Annotations,
@@ -48,15 +47,15 @@ namespace DogRestService.API.Controllers
             {
                 dog.Owner.Id = await _repo.GetAccountIdByEmailAsync(dog.Owner.Email);
 
-                //if (!User.IsInRole("Administrator"))
-                //{
-                //    var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-                //    var dogEmail = dog.Owner.Email;
-                //    if (userEmail != dogEmail)
-                //    {
-                //        return StatusCode(StatusCodes.Status403Forbidden);
-                //    }
-                //}
+                if (!User.IsInRole("Administrator"))
+                {
+                    var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+                    var dogEmail = dog.Owner.Email;
+                    if (userEmail != dogEmail)
+                    {
+                        return StatusCode(StatusCodes.Status403Forbidden);
+                    }
+                }
 
                 var id = await _repo.CreateAsync(dog);
 
@@ -73,7 +72,6 @@ namespace DogRestService.API.Controllers
 
         // PUT: api/Dog/5
         [HttpPut("{id}")]
-        //[Authorize]
         public async Task<IActionResult> Put(int id, [FromBody] Dog dog)
         {
             try
@@ -85,16 +83,16 @@ namespace DogRestService.API.Controllers
                 }
                 dog.Id = id;
 
-                //if (!User.IsInRole("Administrator"))
-                //{
-                //    var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-                //    var dogEmail = existing.Owner.Email;
-                //    var newEmail = dog.Owner.Email;
-                //    if (userEmail != dogEmail || dogEmail != newEmail)
-                //    {
-                //        return StatusCode(StatusCodes.Status403Forbidden);
-                //    }
-                //}
+                if (!User.IsInRole("Administrator"))
+                {
+                    var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+                    var dogEmail = existing.Owner.Email;
+                    var newEmail = dog.Owner.Email;
+                    if (userEmail != dogEmail || dogEmail != newEmail)
+                    {
+                        return StatusCode(StatusCodes.Status403Forbidden);
+                    }
+                }
 
                 dog.Owner.Id = await _repo.GetAccountIdByEmailAsync(dog.Owner.Email);
 
@@ -113,7 +111,7 @@ namespace DogRestService.API.Controllers
 
         // DELETE: api/Dog/5
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Administrator, Moderator")]
+        [Authorize(Roles = "Administrator, Moderator")]
         public async Task<IActionResult> Delete(int id)
         {
             var success = await _repo.DeleteAsync(id);

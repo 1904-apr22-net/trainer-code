@@ -1,30 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DogRestService.API.Repositories;
+﻿using DogRestService.API.Repositories;
 using DogRestService.DAL;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DogRestService.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
@@ -35,12 +24,8 @@ namespace DogRestService.API
             services.AddDbContext<DogDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DogDb")));
 
-            //services.AddAuthentication(sharedOptions =>
-            //{
-            //    sharedOptions.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-            //    .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
+            services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
+                .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
 
             services.AddMvc(options =>
             {
@@ -64,9 +49,7 @@ namespace DogRestService.API
             }
 
             app.UseHttpsRedirection();
-
-            //app.UseAuthentication();
-
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

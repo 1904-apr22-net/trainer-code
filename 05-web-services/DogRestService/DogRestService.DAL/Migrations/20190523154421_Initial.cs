@@ -27,10 +27,7 @@ namespace DogRestService.DAL.Migrations
                 values: new object[] { 1, "Beagle", "Fred" });
         }
 
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
+        protected override void Down(MigrationBuilder migrationBuilder) => migrationBuilder.DropTable(
                 name: "Dog");
-        }
     }
 }
