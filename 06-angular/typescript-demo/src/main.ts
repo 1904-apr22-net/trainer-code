@@ -16,6 +16,7 @@ class Main {
                 cardService.createDeck()
                     .then(res => {
                         drawCardButton.disabled = false;
+                        debugger;
                         deckId = res.deck_id;
                         console.log(deckId);
                     })
