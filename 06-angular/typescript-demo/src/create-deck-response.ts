@@ -3,4 +3,4 @@ export default interface CreateDeckResponse {
     deck_id: string;
     shuffled: boolean;
     remaining: number;
-}
+};

@@ -16,9 +16,19 @@ class Main {
                 cardService.createDeck()
                     .then(res => {
                         drawCardButton.disabled = false;
-                        debugger;
+                        cardContainer.innerHTML = '';
                         deckId = res.deck_id;
                         console.log(deckId);
+                    })
+                    .catch(console.log);
+            });
+
+            drawCardButton.addEventListener('click', () => {
+                cardService.drawCard(deckId)
+                    .then(res => {
+                        let image = <HTMLImageElement>document.createElement('img');
+                        image.src = res.cards[0].image;
+                        cardContainer.appendChild(image);
                     })
                     .catch(console.log);
             });
