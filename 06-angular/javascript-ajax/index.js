@@ -2,6 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     let button = document.getElementById('jokeButton');
+    let fetchButton = document.getElementById('jokeFetch');
     let header = document.getElementById('jokeText');
 
     button.addEventListener('click', () => {
@@ -27,5 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
         xhr.open('GET', 'http://api.icndb.com/jokes/random?escape=javascript');
 
         xhr.send();
+    });
+
+    fetchButton.addEventListener('click', () => {
+        // defaults to 'get' with no body
+        fetch('http://api.icndb.com/j/random?escape=javascript')
+            .then(resource => resource.json(), console.log)
+            .then(obj => {
+                header.textContent = obj.value.joke;
+            })
+            .catch(console.log);
     });
 });
