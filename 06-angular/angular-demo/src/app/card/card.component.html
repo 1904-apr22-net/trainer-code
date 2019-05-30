@@ -1,0 +1,18 @@
+<!-- directives: structural -->
+<!--   - ngIf, ngFor, ngSwitch -->
+<!--  structural directives control adding/removing whole elements
+      from the page. -->
+
+<!-- attribute directives
+       do not add/remove elements, only modify their attributes -->
+  <!-- eg: ngStyle, ngClass -->
+
+  <!-- the element with ngIf on it is rmeoved form the DOM if the condition is false. -->
+
+  <!-- event binding - with parentheses.  -->
+<div *ngIf="card" (click)="drawNewCard()">
+  <img src="{{card.image}}">
+</div>
+<div *ngIf="!card">
+  no card
+</div>
