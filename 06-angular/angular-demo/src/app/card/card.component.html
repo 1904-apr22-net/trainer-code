@@ -12,6 +12,7 @@
   <!-- event binding - with parentheses.  -->
 <div *ngIf="card" (click)="drawNewCard()">
   <img src="{{card.image}}">
+  <!--<img [src]="card.image">  the same thing, but with property binding. -->
 </div>
 <div *ngIf="!card">
   no card
