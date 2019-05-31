@@ -28,6 +28,8 @@ namespace DogRestService.API
 
         public IConfiguration Configuration { get; }
 
+        readonly string AllowLocalAngularAllMethods = "_AllowLocalAngularAllMethods";
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -41,6 +43,19 @@ namespace DogRestService.API
             //})
             //services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
             //    .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(AllowLocalAngularAllMethods,
+                builder =>
+                {
+                    // i would also need to allow the domain of
+                    // my deployed angular app.
+                    builder.WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
 
             services.AddMvc(options =>
             {
@@ -62,6 +77,8 @@ namespace DogRestService.API
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseCors(AllowLocalAngularAllMethods);
 
             app.UseHttpsRedirection();
 

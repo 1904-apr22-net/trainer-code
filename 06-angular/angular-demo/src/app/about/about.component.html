@@ -12,3 +12,14 @@
   <input type="text" name="data1" [(ngModel)]="data">
   <input type="text" name="data2" [(ngModel)]="data">
 </form>
+
+<div *ngIf="dogs">
+  <ol>
+    <li *ngFor="let dog of dogs">
+      {{dog.id}} {{dog.name}}
+    </li>
+  </ol>
+</div>
+<div *ngIf="errorMessage" style="color: red">
+  {{errorMessage}}
+</div>
