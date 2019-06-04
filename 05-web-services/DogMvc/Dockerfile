@@ -21,4 +21,8 @@ WORKDIR /app
 
 COPY --from=build /app/out ./
 
+ENV ASPNETCORE_URLS="https://+;http://+"
+ENV ASPNETCORE_HTTPS_PORT=9100
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/https/aspnetapp.pfx"
+
 ENTRYPOINT [ "dotnet", "DogMvc.dll" ]

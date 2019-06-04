@@ -28,7 +28,7 @@ namespace DogRestService.API
 
         public IConfiguration Configuration { get; }
 
-        readonly string AllowLocalAngularAllMethods = "_AllowLocalAngularAllMethods";
+        readonly string AllowAngularAllMethods = "_AllowLocalAngularAllMethods";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -46,12 +46,12 @@ namespace DogRestService.API
 
             services.AddCors(options =>
             {
-                options.AddPolicy(AllowLocalAngularAllMethods,
+                options.AddPolicy(AllowAngularAllMethods,
                 builder =>
                 {
                     // i would also need to allow the domain of
                     // my deployed angular app.
-                    builder.WithOrigins("http://localhost:4200")
+                    builder.WithOrigins("http://localhost:4200", "http://localhost:9200")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
@@ -78,7 +78,7 @@ namespace DogRestService.API
                 app.UseHsts();
             }
 
-            app.UseCors(AllowLocalAngularAllMethods);
+            app.UseCors(AllowAngularAllMethods);
 
             app.UseHttpsRedirection();
 
