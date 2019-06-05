@@ -4,7 +4,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - '03-mvc/RestaurantReviews'
 
 pool: Default
 
@@ -14,6 +19,10 @@ variables:
 
 steps:
 
+- script: dotnet restore
+  workingDirectory: $(solutionPath)
+  displayName: 'dotnet restore'
+
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'sonarcloud-escalonn'
@@ -22,26 +31,39 @@ steps:
     projectKey: 'escalona1904restreviews'
     extraProperties: |
       sonar.cs.opencover.reportsPaths="$(Build.ArtifactStagingDirectory)/coverage/*"
+      sonar.cs.vstest.reportsPaths="$(Build.ArtifactStagingDirectory)/test/*.trx"
+  displayName: 'Prepare SonarCloud analysis'
 
 - script: dotnet build --configuration $(buildConfiguration)
   workingDirectory: $(solutionPath)
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'dotnet build'
 
 - script: dotnet test
     --configuration $(buildConfiguration)
+    --logger trx
+    --no-build
+    --results-directory $(Build.ArtifactStagingDirectory)/test/
     /p:CollectCoverage=true
     /p:CoverletOutputFormat=opencover
     /p:CoverletOutput='$(Build.ArtifactStagingDirectory)/coverage/'
     /p:Exclude="[xunit*]*"
   workingDirectory: $(solutionPath)
-  displayName: 'dotnet test $(buildConfiguration)'
+  displayName: 'dotnet test'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '*.trx'
+    searchFolder: '$(Build.ArtifactStagingDirectory)/test'
+  displayName: 'Publish test results'
 
 - task: SonarCloudAnalyze@1
-  inputs: {}
+  displayName: 'Run SonarCloud analysis'
 
 - task: SonarCloudPublish@1
   inputs:
-    pollingTimeoutSec: '60'
+    pollingTimeoutSec: '300'
+  displayName: 'Publish SonarCloud quality gate result'
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -50,6 +72,7 @@ steps:
     projects: $(solutionPath)/RestaurantReviews.WebUI/*.csproj
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
+  displayName: 'dotnet publish'
 
 - task: AzureRmWebAppDeployment@4
   inputs:
@@ -58,9 +81,11 @@ steps:
     appType: 'webApp'
     WebAppName: '1904-rest-reviews'
     packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+  displayName: 'Azure App Service deploy'
 
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+  displayName: 'Publish build artifacts'
