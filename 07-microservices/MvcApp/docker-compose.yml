@@ -2,7 +2,23 @@ version: '3.7'
 
 services:
   app:
-    image: mvcapp:0.1.0
+    image: mvcapp:0.1.1
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 8
     ports:
       - 9000:443
     volumes:
