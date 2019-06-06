@@ -25,3 +25,11 @@ services:
       - /c/Users/Revature/.aspnet/https:/https/
     environment:
       ASPNETCORE_Kestrel__Certificates__Default__Password: SomePassword
+  theapi:
+    image: apiapp:0.1.0
+    deploy:
+      replicas: 2
+    volumes:
+      - /c/Users/Revature/.aspnet/https:/https/
+    environment:
+      ASPNETCORE_Kestrel__Certificates__Default__Password: SomePassword
