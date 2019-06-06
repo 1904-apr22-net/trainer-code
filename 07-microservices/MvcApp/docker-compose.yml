@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  app:
+    image: mvcapp:0.1.0
+    ports:
+      - 9000:443
+    volumes:
+      - /c/Users/Revature/.aspnet/https:/https/
+    environment:
+      ASPNETCORE_Kestrel__Certificates__Default__Password: SomePassword
