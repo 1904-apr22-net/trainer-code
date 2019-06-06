@@ -29,7 +29,7 @@ steps:
       sonar.cs.vstest.reportsPaths="$(Build.ArtifactStagingDirectory)/test/*.trx"
   displayName: 'Prepare SonarCloud analysis'
 
-- script: dotnet build --configuration $(buildConfiguration)
+- script: dotnet build --configuration $(buildConfiguration) --no-restore
   workingDirectory: $(solutionPath)
   displayName: 'dotnet build'
 
