@@ -32,7 +32,26 @@ namespace MvcApp
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddSingleton<HttpClient>();
+            // we would just do (something like) this, except
+            // that HttpClient is IDisposable and we should dispose it when
+            // finished. we would use a using block, but there is no place our code
+            // could put it.
+            // var http = new HttpClient();
+            // services.AddSingleton(http);
+
+            // if we register the service with a lambda, then the service provider
+            // will make the instance, and it will properly dispose any IDisposable
+            // at the right times.
+
+            // we give the httpclient a non-default handler, to tell it to
+            // trust all SSL certificates (liket he one the API is using).
+            services.AddSingleton<HttpClientHandler>(sp => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            });
+            // IServiceProvider.GetRequiredService is getting a registered service the same way
+            // constructor injection normally would.
+            services.AddSingleton<HttpClient>(sp => new HttpClient(sp.GetRequiredService<HttpClientHandler>()));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
